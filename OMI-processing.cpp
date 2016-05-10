@@ -177,7 +177,7 @@ bool createOMI(NodeStr& packetData) {
 
             for (uint8_t idx = 0; idx < 3; ++idx) { // loop temp,humi,illu
                 // convert to human readable (*100)
-                String((float)packetData.Data.threeInt[idx] * 100.0f).toCharArray(valueStr,VALUE_LEN);
+                String((float)packetData.Data.threeInt[idx] * 0.01).toCharArray(valueStr,VALUE_LEN);
                 omiAddInfoItem(getTypeName(packetData.Type, idx), valueStr); // TODO: select the data
             }
             break;
