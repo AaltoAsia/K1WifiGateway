@@ -197,9 +197,11 @@ clean:
 $(OBJ_DIR):
 	mkdir -p $(OBJ_DIR)
 
-.PHONY: all
+.PHONY: all cppcheck
 all: $(OBJ_DIR) $(BUILD_INFO_H) $(MAIN_EXE)
 
+cppcheck:
+	cppcheck $(C_INCLUDES) .
 
 # Include all available dependencies
 -include $(wildcard $(OBJ_DIR)/*$(DEP_EXT))

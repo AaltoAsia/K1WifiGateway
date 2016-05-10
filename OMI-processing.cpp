@@ -80,7 +80,7 @@ bool omiAddObject(const char * objectName) {
         < (OMIHttpBufferSize - len);
 }
 
-// Must be used on a buffer that has %s for InfoItem insertion
+// Must be used on a buffer that has %s for InfoItem name and value
 bool omiAddInfoItem(const char * itemName, const char * valueStr) {
     int16_t len = strlen(omiHttpBuffer);
     return snprintf(omiHttpBuffer + len, OMIHttpBufferSize - len, itemTemplate, itemName, valueStr)
@@ -176,7 +176,8 @@ bool createOMI(NodeStr& packetData) {
             }
 
             for (uint8_t idx = 0; idx < 3; ++idx) { // loop temp,humi,illu
-                String(packetData.Data.threeInt[idx]).toCharArray(valueStr,VALUE_LEN);
+                // convert to human readable (*100)
+                String((float)packetData.Data.threeInt[idx] * 100.0f).toCharArray(valueStr,VALUE_LEN);
                 omiAddInfoItem(getTypeName(packetData.Type, idx), valueStr); // TODO: select the data
             }
             break;

@@ -325,7 +325,7 @@ bool getNode(NodeStr * tmp)
             humi *= (humidRead & 0xFFFC);
             humi >>= 16;
 
-            tmp->Data.threeInt[HUMIDITY_I] = (uint16_t) humi;
+            tmp->Data.threeInt[HUMIDITY_I] = (uint16_t) humi * 100;
 
             // TODO: ADC conversion of light sensor?
 
