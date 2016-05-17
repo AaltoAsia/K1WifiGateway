@@ -32,6 +32,7 @@ convert the certificate into DER format
 Then you can use SPIFFS or convert the keys to C code header with
 
 `> xxd -i client.crt > MyCertificates.h`
+
 `> xxd -i client.key >> MyCertificates.h`
 
 
