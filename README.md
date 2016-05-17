@@ -11,21 +11,26 @@ Certificate and key need to be in unencrypted (empty passphrase) DER format.
 
 Example for making keys:
 generate the private key (a 1024 bit key is used in this example)
+
 `> openssl genrsa -out my_private_key.pem 1024`
 
 convert the private key into DER format
+
 `> openssl rsa -in ./my_private_key.pem -out ./my_private_key -outform DER`
 
 generate the certificate request using the previously generated private key
+
 `> openssl req -new -key my_private_key.pem -out my_cert_req.pem`
 
 get the certificate from Certificate Authority
 (see other guides if you are managing your own CA)
 
 convert the certificate into DER format 
+
 `> openssl x509 -in my_cert.pem -out my_cert -outform DER`
 
 Then you can use SPIFFS or convert the keys to C code header with
+
 `> xxd -i client.crt > MyCertificates.h`
 `> xxd -i client.key >> MyCertificates.h`
 
