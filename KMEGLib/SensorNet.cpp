@@ -309,7 +309,7 @@ bool getNode(NodeStr * tmp)
             //memcpy(tmp->Data.threeInt, packet+DATA5, 3 * sizeof(uint16_t)); // three shorts
 
             uint16_t tempRead = packet[DATA5] << 8 | packet[DATA4];
-            tmp->Data.threeInt[LIGHT_I] = packet[DATA1] << 8 | packet[DATA0];
+            tmp->Data.threeInt[LIGHT_I] = (packet[DATA1] << 8 | packet[DATA0]) * 100;
 
             // Conversions according to datasheets of Sht2x
             uint32_t temp = 17572;
@@ -325,7 +325,7 @@ bool getNode(NodeStr * tmp)
             humi *= (humidRead & 0xFFFC);
             humi >>= 16;
 
-            tmp->Data.threeInt[HUMIDITY_I] = (uint16_t) humi * 100;
+            tmp->Data.threeInt[HUMIDITY_I] = (uint16_t) humi;
 
             // TODO: ADC conversion of light sensor?
 
