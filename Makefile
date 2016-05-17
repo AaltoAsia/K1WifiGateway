@@ -56,9 +56,9 @@ UPLOAD_RESET ?= nodemcu # none, ck, nodemcu, wifio
 #
 # USB Host        ESP8266               WizFi220        TinyOs MCU
 # USB RX <---+---< USB     TX >         < TX >----------> RX                
-#            |   < GPIO 15 TX >         > RX <-----+-+--< TX         
-#            `---< GPIO 2  TX >                    | |
-#                > GPIO 13 RX <--------------------´ |
+#            |   < GPIO 15 TX >         > RX <-----+----< TX         
+#            `---< GPIO 2  TX >                    |  
+#                > GPIO 13 RX <--------------------´  
 #
 # OTHER CONNECTIONS: (restarting in case of crash)
 # D8    |D3    |D4     |
