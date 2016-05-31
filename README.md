@@ -3,6 +3,10 @@
 Program for using ESP8266 to hack a certain 6LoWPAN to WiFi bridge system to use O-MI.
 Data is sniffed from a serial connection.
 
+This program creates Open Messaging Interface write requests to following paths:
+* Objects/K1/Gateways/<mac address> : Information about this hacking program
+* Objects/K1/<room name> : Received sensor information from sensor box installed at room name
+
 
 Installation to an ESP8266
 --------------------------
@@ -54,6 +58,8 @@ To update:
 3. The WHOLE VERSION STRING is sent by the esp when looking for updates and can be compared to the
    new one
 4. This program checks updates only on boot.
+5. Check that the program updated and is not in a reboot loop (update shouldn't take more than 5
+   mins)
 
 The current server setup has the image on path `/opt/k1update/KMEG-WSN-OMI-bridge.bin` and requires
 modifying and reloading the nginx site config.
@@ -91,12 +97,34 @@ USB RX <---+---< USB     TX >         < TX >----------> RX
                > GPIO 13 RX <--------------------´  
 ```
 
-OTHER CONNECTIONS: (for restarting in case of crash)
---------------------------------------------------
+GATEWAY CONNECTIONS SUMMARY:
+--------------------------
+
+Header is the text marked row of islands next to WizFi220 chip.
+
+1. `VCC` ESP <--> `VCC` header
+1. `GND` ESP <--> `GND` header
+1. `GPIO13` (D7) ESP <--> `TX` header
+
+WizFi connection replacements:
+
+1. `GPIO31` WizFI220 pin44: Cut before resistor (near MCU) and attach MCU side to `GND`
+1. `EXT_nRESET` WizFI220 pin35: (It's the extra wire; no pcb trace) Cut and attach MCU side to `GND`
+
+OTHER CONNECTIONS:
+------------------
+
+Table for ESP boot mode pin configurations. for restarting in case of crash
 
 D8 GPIO15| D3 GPIO0 | D4 GPIO2 |Mode
 ---------|----------|----------|-----------------
 0V       |0V        |3.3V      |Uart Bootloader
-0V       |3.3V      |3.3V      |BOOT SKETCH
+0V       |3.3V      |3.3V      |(RE)BOOT SKETCH, use this configuration
 3.3V     |x         |x         |SDIO mode (not used for Arduino)
+
+In other words, connect:
+
+1. `GPIO15` (D8) <--> `GND`
+1. `GPIO0` (D3) <--> `VCC`
+1. `GPIO2` (D4) <--> `VCC`
 
