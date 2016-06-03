@@ -189,7 +189,7 @@ bool createOMI(NodeStr& packetData) {
                 String(packetData.Last_seq).toCharArray(valueStr,VALUE_LEN);
                 if (packetData.Type == PIR_OSCILLOSCOPE)
                     omiAddInfoItem(FS("PIR_PacketNo"), valueStr);
-                else if (packetData.Type == CO2_OSCILLOSCOPE)
+                else if (packetData.Type == CO2S100_OSCILLOSCOPE)
                     omiAddInfoItem(FS("CO2_PacketNo"), valueStr);
             }
         }
