@@ -3,7 +3,7 @@
 Program for using ESP8266 to hack a certain 6LoWPAN to WiFi bridge system to use O-MI.
 Data is sniffed from a serial connection.
 
-This program creates Open Messaging Interface write requests to following paths:
+This program creates *Open Messaging Interface* write requests to following *Open Data Format* paths:
 * Objects/K1/Gateways/<mac address> : Information about this hacking program
 * Objects/K1/<room name> : Received sensor information from sensor box installed at room name
 
