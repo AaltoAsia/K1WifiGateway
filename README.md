@@ -58,6 +58,7 @@ default the identity of the server and sends its own client certificate to serve
 authentication, so unknown users cannot steal our client certificate from the update image.
 
 To update:
+
 1. `$ make`
 2. The image needs to be copied to the target HTTPS server from
    `/tmp/KMEG-WSN-OMI-bridge/KMEG-WSN-OMI-bridge.bin`
