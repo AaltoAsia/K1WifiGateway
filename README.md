@@ -129,9 +129,12 @@ D8 GPIO15| D3 GPIO0 | D4 GPIO2 |Mode
 0V       |3.3V      |3.3V      |(RE)BOOT SKETCH, **use this configuration**
 3.3V     |x         |x         |SDIO mode (not used for Arduino)
 
+
+**GPIO2 (D4) is already connected to TX for debug output**, TX is connected to VCC via 10k resistor in many boards.
+
 In other words, connect (use 10kOhm resistors for the safety of your ESP):
 
 1. `GPIO15` (D8) <--> `GND`
 1. `GPIO0` (D3) <--> `VCC`
-1. `GPIO2` (D4) <--> `VCC`
+1. `GPIO2` (D4) <--> `GPIO1` (TX)
 

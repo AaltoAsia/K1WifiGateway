@@ -60,7 +60,7 @@ UPLOAD_RESET ?= nodemcu # none, ck, nodemcu, wifio
 #            `---< GPIO 2  TX >                    |  
 #                > GPIO 13 RX <--------------------´  
 #
-# OTHER CONNECTIONS: (restarting in case of crash)
+# OTHER CONNECTIONS: (restarting in case of crash), D4 is already connected to TX which is connected to VCC via resistor
 # D8    |D3    |D4     |
 # GPIO15|GPIO0 |GPIO2  |Mode
 # ------|------|-------|-----------------
