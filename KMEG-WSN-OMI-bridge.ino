@@ -209,7 +209,8 @@ void setup() {
 // GLOBALS
 static NodeStr packetData; // data to send
 static uint8_t sendRetries=0; // retry counter
-
+unsigned long previousMIllis = 0; // last time data was sent
+const uint16_t interval = 10000; // interval at which to send data
 
 
 void handleIncomingData() {
@@ -248,15 +249,20 @@ void loop() {
     // Save incoming data to globals
     handleIncomingData();
 
-    // Try to send the data in globals
-    if ( (sendRetries>0)
-      && (WiFiMulti.run() == WL_CONNECTED)) { // Connected to an AP
+    unsigned long currentMillis = millis();
+    if(currentMillis - previousMillis >= interval){
+      previousMillis = currentMillis;
 
-        if (createOMI(packetData) && trySend(http)) {
-            sendRetries = 0; 
-        } else {
-            --sendRetries;
-        } 
+      // Try to send the data in globals
+      if ( (sendRetries>0)
+        && (WiFiMulti.run() == WL_CONNECTED)) { // Connected to an AP
+  
+          if (createOMI(packetData) && trySend(http)) {
+              sendRetries = 0; 
+          } else {
+              --sendRetries;
+          } 
+      }
     }
 
     //delay();

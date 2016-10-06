@@ -40,21 +40,27 @@ typedef struct lqi_beacon_msg {
 typedef struct _NodeStr NodeStr;
 
 typedef union _Data {
-    uint16_t threeInt[3];
-    uint16_t singleInt;
 } Data_t;
 
 struct _NodeStr{
-    Data_t Data;
+//    Data_t Data;
+    uint16_t intValues[5]; // hum, temp, lum, co2, pir
+    //uint16_t singleInt;
+    //uint16_t singleInt;
 
     uint16_t Id;
     uint16_t Type;
     uint16_t Last_seq;
     uint16_t length;
-
+    
+    int8_t treeCount;
+    int8_t co2Count;
+    //int8_t pirCount not neccessary
     int8_t Rssi; // Receive signal strength indicator
     bool packetLost; // latest packet was lost in serial comms
     bool Ack;
+    bool filler; //pad to 24bytes
+
 
 }__attribute__((packed));
 
