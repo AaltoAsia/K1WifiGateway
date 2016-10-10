@@ -49,7 +49,7 @@ struct _NodeStr{
     //uint16_t singleInt;
 
     uint16_t Id;
-    uint16_t Type;
+    uint16_t Type; //change to bit word telling what sensor values we have obtained.
     uint16_t Last_seq;
     uint16_t length;
     
@@ -59,7 +59,7 @@ struct _NodeStr{
     int8_t Rssi; // Receive signal strength indicator
     bool packetLost; // latest packet was lost in serial comms
     bool Ack;
-    bool filler; //pad to 24bytes
+    //pad to 24bytes ?
 
 
 }__attribute__((packed));
@@ -119,6 +119,6 @@ int read_packet(uint8_t *packet);
 char getch(void);
 void putch(unsigned char buf);
 uint8_t crcCheck(uint8_t *data, uint8_t len);
-bool getNode(NodeStr * tmp);
+bool getNode(NodeStr * tmp, uint8_t len);
 
 #endif

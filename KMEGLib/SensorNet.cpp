@@ -164,9 +164,22 @@ uint8_t crcCheck(uint8_t *data, uint8_t len){
     return 0;
 }
 
+NodeStr * getArrayPos(NodeStr * accData, uint8_t len, uint16_t id)
+{
+    for(uint8_t i = 0; i <= len; i++)
+    {
+        if(i == len){
+            return &accData[len];
+        }
+        if(accData[i].Id == id){
+            return &accData[i];
+        }
+    }
+            return &accData[len];
+}
 
 uint8_t packet[MAX_PACKET_SIZE];
-bool getNode(NodeStr * tmp)
+bool getNode(NodeStr * accData, uint8_t len)
 {
     uint16_t id, seq;
     int size;
@@ -219,7 +232,7 @@ bool getNode(NodeStr * tmp)
 
 
     // Oscilloscope Message type
-    id = packet[NODEID1] <<8;
+    id = packet[NODEID1] << 8;
     id |= packet[NODEID0];
     seq = packet[COUNT1] << 8;
     seq |= packet[COUNT0];
@@ -234,13 +247,14 @@ bool getNode(NodeStr * tmp)
         return false;
     }
 
+    NodeStr * tmp;
 
     if(crcCheck(packet, size)){
-
+        tmp = getArrayPos(accData, len, id);
         tmp->Id = id;
         tmp->Type = type;
         tmp->Last_seq = seq;
-        memset(tmp->Data.threeInt, 0, 3);
+        memset(tmp->intValues, 0, 5);
         tmp->packetLost = false;
 
         if(packet[PROTO] == SERIAL_PROTO_PACKET_ACK )
@@ -265,11 +279,12 @@ bool getNode(NodeStr * tmp)
         DBGSTREAM.println(F("[Ygg] CRC FAILURE IN SERIAL!\r\n"));
 
         if (getNodeIndex(id) != 0xFFFF) {
+            tmp = getArrayPos(accData, len, id);
             tmp->Id = id;
             tmp->Type = FAIL_OSCILLOSCOPE;
             tmp->Last_seq = 0;
             tmp->Rssi = 0; // dBm - offset?
-            memset(tmp->Data.threeInt, 0, 3);
+            memset(tmp->intValues, 0, 5);
             tmp->packetLost = true;
 
             return true; // we have a failure packet to send
@@ -298,7 +313,7 @@ bool getNode(NodeStr * tmp)
             // casting to struct has fundamental problems
             //pir_oscilloscope_t* pir = (pir_oscilloscope_t*)&packet[sizeof(serial_header_t)];
             //tmp->Data.singleInt = pir->interrupt;
-            tmp->Data.singleInt = packet[DATA5] << 8 | packet[DATA4];
+            tmp->intValues[4] = packet[DATA5] << 8 | packet[DATA4];
             break;
         }
         case TH20_OSCILLOSCOPE: {
@@ -309,14 +324,14 @@ bool getNode(NodeStr * tmp)
             //memcpy(tmp->Data.threeInt, packet+DATA5, 3 * sizeof(uint16_t)); // three shorts
 
             uint16_t tempRead = packet[DATA5] << 8 | packet[DATA4];
-            tmp->Data.threeInt[LIGHT_I] = (packet[DATA1] << 8 | packet[DATA0]) * 100;
+            tmp->intValues[2] = (packet[DATA1] << 8 | packet[DATA0]) * 100;
 
             // Conversions according to datasheets of Sht2x
             uint32_t temp = 17572;
             temp *= (uint32_t)(tempRead & 0xFFFC);
             temp >>= 16;
 
-            tmp->Data.threeInt[TEMPERATURE_I] = (uint16_t) temp;
+            tmp->intValues[1] = (uint16_t) temp;
 
             uint16_t humidRead = packet[DATA3] << 8 | packet[DATA2];
 
@@ -325,7 +340,7 @@ bool getNode(NodeStr * tmp)
             humi *= (humidRead & 0xFFFC);
             humi >>= 16;
 
-            tmp->Data.threeInt[HUMIDITY_I] = (uint16_t) humi * 10; // Don't know why the decimal place is wrong
+            tmp->intValues[0] = (uint16_t) humi * 10; // Don't know why the decimal place is wrong
 
             // TODO: ADC conversion of light sensor?
 
@@ -335,7 +350,7 @@ bool getNode(NodeStr * tmp)
             // casting to struct has fundamental problems
             //co2_oscilloscope_t* co2 = (co2_oscilloscope_t*)&packet[sizeof(serial_header_t)];
             //tmp->Data.singleInt = co2->readings[0];
-            tmp->Data.singleInt = packet[DATA5] << 8 | packet[DATA4];
+            tmp->intValues[3] = packet[DATA5] << 8 | packet[DATA4];
             break;
         }
         default:
