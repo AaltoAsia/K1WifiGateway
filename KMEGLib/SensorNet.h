@@ -55,6 +55,7 @@ struct _NodeStr{
     
     int8_t treeCount;
     int8_t co2Count;
+    int8_t pirCount;
     //int8_t pirCount not neccessary
     int8_t Rssi; // Receive signal strength indicator
     bool packetLost; // latest packet was lost in serial comms

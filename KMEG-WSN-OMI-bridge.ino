@@ -264,6 +264,21 @@ void loop() {
               --sendRetries;
           } 
       }
+      //reset array
+      for(int i = 0; i<numValues; i++){
+          memset(accData[i].intValues, 0, 5);
+          accData[i].Id = 0;
+          accData[i].Last_seq = 0;
+          accData[i].length = 0;
+          accData[i].treeCount = 0;
+          accData[i].co2Count = 0;
+          accData[i].pirCount = 0;
+          accData[i].Rssi = 0;
+          accData[i].packetLost = false;
+          accData[i].Ack = false;
+   
+      }
+      
     }
 
     //delay();

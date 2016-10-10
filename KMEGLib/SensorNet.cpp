@@ -169,13 +169,20 @@ NodeStr * getArrayPos(NodeStr * accData, uint8_t len, uint16_t id)
     for(uint8_t i = 0; i <= len; i++)
     {
         if(i == len){
-            return &accData[len];
+            break;//return &accData[len];
         }
         if(accData[i].Id == id){
             return &accData[i];
         }
     }
-            return &accData[len];
+    
+    //initializd necessary values
+    accData[len].Id = id;
+    //accData[len].Type = 0;
+    accData[len].treeCount = 0;
+    accData[len].co2Count = 0;
+    accData[len].pirCount = 0; //so that we don't access null values
+    return &accData[len];
 }
 
 uint8_t packet[MAX_PACKET_SIZE];
@@ -310,6 +317,7 @@ bool getNode(NodeStr * accData, uint8_t len)
 
     switch (tmp->Type) {
         case PIR_OSCILLOSCOPE: {
+            tmp->pirCount++;
             // casting to struct has fundamental problems
             //pir_oscilloscope_t* pir = (pir_oscilloscope_t*)&packet[sizeof(serial_header_t)];
             //tmp->Data.singleInt = pir->interrupt;
@@ -317,6 +325,7 @@ bool getNode(NodeStr * accData, uint8_t len)
             break;
         }
         case TH20_OSCILLOSCOPE: {
+            tmp->treeCount++;
             // casting to struct has fundamental problems
             //th_oscilloscope_t* th = (th_oscilloscope_t*)&packet[sizeof(serial_header_t)];
             ////tmp->Data.threeInt = {th->temp[0], th->humi[0], th->illu[0]};
@@ -324,14 +333,14 @@ bool getNode(NodeStr * accData, uint8_t len)
             //memcpy(tmp->Data.threeInt, packet+DATA5, 3 * sizeof(uint16_t)); // three shorts
 
             uint16_t tempRead = packet[DATA5] << 8 | packet[DATA4];
-            tmp->intValues[2] = (packet[DATA1] << 8 | packet[DATA0]) * 100;
+            tmp->intValues[2] += (packet[DATA1] << 8 | packet[DATA0]) * 100;
 
             // Conversions according to datasheets of Sht2x
             uint32_t temp = 17572;
             temp *= (uint32_t)(tempRead & 0xFFFC);
             temp >>= 16;
 
-            tmp->intValues[1] = (uint16_t) temp;
+            tmp->intValues[1] += (uint16_t) temp;
 
             uint16_t humidRead = packet[DATA3] << 8 | packet[DATA2];
 
@@ -340,17 +349,17 @@ bool getNode(NodeStr * accData, uint8_t len)
             humi *= (humidRead & 0xFFFC);
             humi >>= 16;
 
-            tmp->intValues[0] = (uint16_t) humi * 10; // Don't know why the decimal place is wrong
+            tmp->intValues[0] += (uint16_t) humi * 10; // Don't know why the decimal place is wrong
 
             // TODO: ADC conversion of light sensor?
-
             break;
         }
         case CO2S100_OSCILLOSCOPE: {
             // casting to struct has fundamental problems
             //co2_oscilloscope_t* co2 = (co2_oscilloscope_t*)&packet[sizeof(serial_header_t)];
             //tmp->Data.singleInt = co2->readings[0];
-            tmp->intValues[3] = packet[DATA5] << 8 | packet[DATA4];
+            tmp->co2Count++;
+            tmp->intValues[3] += packet[DATA5] << 8 | packet[DATA4];
             break;
         }
         default:
