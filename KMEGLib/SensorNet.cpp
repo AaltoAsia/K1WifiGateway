@@ -179,7 +179,9 @@ NodeStr * getArrayPos(NodeStr * accData, uint8_t & len, uint16_t id)
     //initializd necessary values
     accData[len].Id = id;
     //accData[len].Type = 0;
-    accData[len].treeCount = 0;
+    accData[len].humCount = 0;
+    accData[len].tempCount = 0;
+    accData[len].lumCount = 0;
     accData[len].co2Count = 0;
     accData[len].pirCount = 0; //so that we don't access null values
     return &accData[len++];
