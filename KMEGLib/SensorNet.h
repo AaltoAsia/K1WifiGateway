@@ -120,6 +120,6 @@ int read_packet(uint8_t *packet);
 char getch(void);
 void putch(unsigned char buf);
 uint8_t crcCheck(uint8_t *data, uint8_t len);
-bool getNode(NodeStr * tmp, uint8_t len);
+bool getNode(NodeStr * tmp, uint8_t & len);
 
 #endif
