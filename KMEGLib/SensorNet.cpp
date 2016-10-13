@@ -164,7 +164,7 @@ uint8_t crcCheck(uint8_t *data, uint8_t len){
     return 0;
 }
 
-NodeStr * getArrayPos(NodeStr * accData, uint8_t len, uint16_t id)
+NodeStr * getArrayPos(NodeStr * accData, uint8_t & len, uint16_t id)
 {
     for(uint8_t i = 0; i <= len; i++)
     {
@@ -182,11 +182,11 @@ NodeStr * getArrayPos(NodeStr * accData, uint8_t len, uint16_t id)
     accData[len].treeCount = 0;
     accData[len].co2Count = 0;
     accData[len].pirCount = 0; //so that we don't access null values
-    return &accData[len];
+    return &accData[len++];
 }
 
 uint8_t packet[MAX_PACKET_SIZE];
-bool getNode(NodeStr * accData, uint8_t len)
+bool getNode(NodeStr * accData, uint8_t & len)
 {
     uint16_t id, seq;
     int size;
