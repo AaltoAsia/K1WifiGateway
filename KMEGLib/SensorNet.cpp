@@ -324,6 +324,7 @@ bool getNode(NodeStr * accData, uint8_t & len)
             //pir_oscilloscope_t* pir = (pir_oscilloscope_t*)&packet[sizeof(serial_header_t)];
             //tmp->Data.singleInt = pir->interrupt;
             tmp->intValues[4] = packet[DATA5] << 8 | packet[DATA4];
+                DBGSTREAM.printf(FS("got pir raw value  : %x\r\n"), tmp->intValues[4] );
             break;
         }
         case TH20_OSCILLOSCOPE: {
@@ -336,6 +337,7 @@ bool getNode(NodeStr * accData, uint8_t & len)
 
             uint16_t tempRead = (packet[DATA1] << 8 | packet[DATA0]) * 100;
             if(tempRead != 0) {
+                DBGSTREAM.printf(FS("got lum raw value(x100)  : %x\r\n"), tempRead );
                 tmp->intValues[2] += tempRead;
                 tmp->lumCount++;
             }
@@ -346,6 +348,7 @@ bool getNode(NodeStr * accData, uint8_t & len)
             temp >>= 16;
 
             if(temp != 0){
+                DBGSTREAM.printf(FS("got temp raw value  : %x\r\n"), (uint16_t) temp);
                 tmp->intValues[1] += (uint16_t) temp;
                 tmp->tempCount++;
             }
@@ -357,6 +360,7 @@ bool getNode(NodeStr * accData, uint8_t & len)
             humi >>= 16;
 
             if(humi != 0){
+    DBGSTREAM.printf(FS("got humidity raw value(x10)  : %x\r\n"), (uint16_t) humi * 10 );
             tmp->intValues[0] += (uint16_t) humi * 10; // Don't know why the decimal place is wrong
             tmp->humCount++;
             }
@@ -370,6 +374,7 @@ bool getNode(NodeStr * accData, uint8_t & len)
             //tmp->Data.singleInt = co2->readings[0];
             tmp->co2Count++;
             tmp->intValues[3] += packet[DATA5] << 8 | packet[DATA4];
+                DBGSTREAM.printf(FS("got co2 raw value  : %x\r\n"), (packet[DATA5] << 8 | packet[DATA4]) );
             break;
         }
         default:
