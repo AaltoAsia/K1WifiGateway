@@ -140,7 +140,7 @@ bool createBridgeBootOMI() {
     return omiFooter();
 }
 
-bool createOMI(NodeStr& packetData) {
+bool createOMI(NodeStr * packetData, uint8_t len) {
     char valueStr[VALUE_LEN];
 
     {
@@ -148,7 +148,7 @@ bool createOMI(NodeStr& packetData) {
 
     omiAddObject("K1");
 
-
+/*
     if (packetData.Type == FAIL_OSCILLOSCOPE || packetData.packetLost) {
         omiAddObject(FS("Gateways"));
         WiFi.macAddress().toCharArray(valueStr, VALUE_LEN);
@@ -157,14 +157,43 @@ bool createOMI(NodeStr& packetData) {
         String(packetData.Id).toCharArray(valueStr, VALUE_LEN);
         char* info = FS("CRC error, from: ");
         strcat(info, valueStr);
-        omiAddInfoItem("PacketLoss", info);
+        omiAddInfoItem("PacketLoss", info); //buffer might be used for info, not FS available
         return omiFooter();
     }
-
-    DBGSTREAM.printf(FS("[OMI-processing] Creating Object. getNodeName(%i).\r\n"), packetData.Id);
-    omiAddObject(getNodeName(packetData.Id));
+*/ //TODO re-add Gateways object
     }
 
+    for(uint8_t i = 0; i < len; i++)
+    {
+    DBGSTREAM.printf(FS("[OMI-processing] Creating Object. getNodeName(%i).\r\n"), packetData[i].Id);
+    omiAddObject(getNodeName(packetData[i].Id));
+
+    if(packetData[i].treeCount > 0){
+        DBGSTREAM.printf(FS("[OMI-processing] temp,humi,light InfoItem.\r\n"));
+        for(uint8_t idx = 0; idx < 3; idx++){ //loop temp humi illu values
+            String(((float)packetData[i].intValues[idx] * 0.01) / packetData[i].treeCount ).toCharArray(valueStr,VALUE_LEN);
+            omiAddInfoItem(getTypeName(TH20_OSCILLOSCOPE, idx), valueStr); // TODO: select the data
+        }
+    }
+
+    if(packetData[i].co2Count > 0){
+        DBGSTREAM.printf(FS("[OMI-processing] CO2 InfoItem.\r\n"));
+        String(packetData[i].intValues[3] / packetData[i].co2Count).toCharArray(valueStr,VALUE_LEN);
+        omiAddInfoItem(getTypeName(CO2S100_OSCILLOSCOPE), valueStr);
+    }
+
+    if(packetData[i].pirCount > 0){
+        DBGSTREAM.printf(FS("[OMI-processing] PIR InfoItem.\r\n"));
+        String(packetData[i].intValues[4] / packetData[i].pirCount).toCharArray(valueStr,VALUE_LEN);
+        omiAddInfoItem(getTypeName(PIR_OSCILLOSCOPE), valueStr);
+    }
+
+    omiCloseObject();
+    }
+    return omiFooter(); // should return false if buffer overflowed
+    
+}
+/*
     // Parse the values TODO
     {switch (packetData.Type) {
         case TH20_OSCILLOSCOPE: {
@@ -202,16 +231,13 @@ bool createOMI(NodeStr& packetData) {
             omiAddInfoItem(getTypeName(packetData.Type), valueStr);
         }
     }}
+    }
     // Extra data
     if (packetData.Rssi != 0) {
         String((unsigned int)packetData.Rssi).toCharArray(valueStr,VALUE_LEN);
         omiAddInfoItem(FS("Rssi"), valueStr);
     }
-
-    omiCloseObject();
-
-    return omiFooter(); // should return false if buffer overflowed
-}
+*/
 
 
 #ifdef OMI_CERT

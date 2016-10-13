@@ -207,11 +207,11 @@ void setup() {
 
 
 // GLOBALS
-static NodeStr packetData; // data to send
+//static NodeStr packetData; // data to send
+NodeStr accData[20]; // = (NodeStr*) malloc(20 * sizeof(NodeStr)); //this is array containing the accumulated Data over the interval defined; add lenght to DEFINE instead of magic value
 static uint8_t sendRetries=0; // retry counter
 unsigned long previousMillis = 0; // last time data was sent
 const uint16_t interval = 10000; // interval at which to send data
-NodeStr accData[20]; // = (NodeStr*) malloc(20 * sizeof(NodeStr)); //this is array containing the accumulated Data over the interval defined; add lenght to DEFINE instead of magic value
 uint8_t numValues = 0; //remember to keep this to array size
 
 void handleIncomingData() {
@@ -258,7 +258,7 @@ void loop() {
       if ( (sendRetries>0)
         && (WiFiMulti.run() == WL_CONNECTED)) { // Connected to an AP
   
-          if (createOMI(packetData) && trySend(http)) {
+          if (createOMI(accData, numValues) && trySend(http)) {
               sendRetries = 0; 
           } else {
               --sendRetries;
@@ -278,6 +278,7 @@ void loop() {
           accData[i].Ack = false;
    
       }
+      numValues = 0;
       
     }
 
