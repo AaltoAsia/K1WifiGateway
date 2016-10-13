@@ -211,7 +211,7 @@ void setup() {
 NodeStr accData[20]; // = (NodeStr*) malloc(20 * sizeof(NodeStr)); //this is array containing the accumulated Data over the interval defined; add lenght to DEFINE instead of magic value
 static uint8_t sendRetries=0; // retry counter
 unsigned long previousMillis = 0; // last time data was sent
-const uint16_t interval = 10000; // interval at which to send data
+const uint16_t interval = 20000; // interval at which to send data
 uint8_t numValues = 0; //remember to keep this to array size
 
 void handleIncomingData() {
@@ -253,33 +253,35 @@ void loop() {
     unsigned long currentMillis = millis();
     if(currentMillis - previousMillis >= interval){
       previousMillis = currentMillis;
-
+      if(numValues > 0){
       // Try to send the data in globals
-      if ( (sendRetries>0)
-        && (WiFiMulti.run() == WL_CONNECTED)) { // Connected to an AP
+          if ( (sendRetries>0)
+            && (WiFiMulti.run() == WL_CONNECTED)) { // Connected to an AP
   
-          if (createOMI(accData, numValues) && trySend(http)) {
-              sendRetries = 0; 
-          } else {
-              --sendRetries;
-          } 
-      }
-      //reset array
-      for(int i = 0; i<numValues; i++){
-          memset(accData[i].intValues, 0, 5);
-          accData[i].Id = 0;
-          accData[i].Last_seq = 0;
-          accData[i].length = 0;
-          accData[i].treeCount = 0;
-          accData[i].co2Count = 0;
-          accData[i].pirCount = 0;
-          accData[i].Rssi = 0;
-          accData[i].packetLost = false;
-          accData[i].Ack = false;
-   
-      }
-      numValues = 0;
-      
+              if (createOMI(accData, numValues) && trySend(http)) {
+                  sendRetries = 0; 
+              } else {
+                  --sendRetries;
+              } 
+          }
+          //reset array
+          for(int i = 0; i<numValues; i++){
+              memset(accData[i].intValues, 0, 5);
+              accData[i].Id = 0;
+              accData[i].Last_seq = 0;
+              accData[i].length = 0;
+              accData[i].humCount = 0;
+              accData[i].tempCount = 0;
+              accData[i].lumCount = 0;
+              accData[i].co2Count = 0;
+              accData[i].pirCount = 0;
+              accData[i].Rssi = 0;
+              accData[i].packetLost = false;
+              accData[i].Ack = false;
+       
+          }
+          numValues = 0;
+      }  
     }
 
     //delay();

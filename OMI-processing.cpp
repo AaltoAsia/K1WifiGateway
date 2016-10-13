@@ -168,10 +168,25 @@ bool createOMI(NodeStr * packetData, uint8_t len) {
     DBGSTREAM.printf(FS("[OMI-processing] Creating Object. getNodeName(%i).\r\n"), packetData[i].Id);
     omiAddObject(getNodeName(packetData[i].Id));
 
-    if(packetData[i].treeCount > 0){
+    if((packetData[i].humCount + packetData[i].tempCount + packetData[i].lumCount) > 0){
         DBGSTREAM.printf(FS("[OMI-processing] temp,humi,light InfoItem.\r\n"));
         for(uint8_t idx = 0; idx < 3; idx++){ //loop temp humi illu values
-            String(((float)packetData[i].intValues[idx] * 0.01) / packetData[i].treeCount ).toCharArray(valueStr,VALUE_LEN);
+            uint8_t threeCount = 0;
+            switch(idx){
+                case 0:{
+                    threeCount = packetData[i].humCount;
+                break;
+                }
+                case 1:{
+                    threeCount = packetData[i].tempCount;
+                break;
+                }
+                case 2:{
+                    threeCount = packetData[i].lumCount;
+                break;
+                }
+            }
+            String(((float)packetData[i].intValues[idx] * 0.01) / threeCount ).toCharArray(valueStr,VALUE_LEN);
             omiAddInfoItem(getTypeName(TH20_OSCILLOSCOPE, idx), valueStr); // TODO: select the data
         }
     }
@@ -184,7 +199,7 @@ bool createOMI(NodeStr * packetData, uint8_t len) {
 
     if(packetData[i].pirCount > 0){
         DBGSTREAM.printf(FS("[OMI-processing] PIR InfoItem.\r\n"));
-        String(packetData[i].intValues[4] / packetData[i].pirCount).toCharArray(valueStr,VALUE_LEN);
+        String(packetData[i].intValues[4]).toCharArray(valueStr,VALUE_LEN);
         omiAddInfoItem(getTypeName(PIR_OSCILLOSCOPE), valueStr);
     }
 

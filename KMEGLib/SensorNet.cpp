@@ -325,23 +325,28 @@ bool getNode(NodeStr * accData, uint8_t & len)
             break;
         }
         case TH20_OSCILLOSCOPE: {
-            tmp->treeCount++;
+            //tmp->treeCount++;
             // casting to struct has fundamental problems
             //th_oscilloscope_t* th = (th_oscilloscope_t*)&packet[sizeof(serial_header_t)];
             ////tmp->Data.threeInt = {th->temp[0], th->humi[0], th->illu[0]};
 
             //memcpy(tmp->Data.threeInt, packet+DATA5, 3 * sizeof(uint16_t)); // three shorts
 
-            uint16_t tempRead = packet[DATA5] << 8 | packet[DATA4];
-            tmp->intValues[2] += (packet[DATA1] << 8 | packet[DATA0]) * 100;
-
+            uint16_t tempRead = (packet[DATA1] << 8 | packet[DATA0]) * 100;
+            if(tempRead != 0) {
+                tmp->intValues[2] += tempRead;
+                tmp->lumCount++;
+            }
+            tempRead = packet[DATA5] << 8 | packet[DATA4];
             // Conversions according to datasheets of Sht2x
             uint32_t temp = 17572;
             temp *= (uint32_t)(tempRead & 0xFFFC);
             temp >>= 16;
 
-            tmp->intValues[1] += (uint16_t) temp;
-
+            if(temp != 0){
+                tmp->intValues[1] += (uint16_t) temp;
+                tmp->tempCount++;
+            }
             uint16_t humidRead = packet[DATA3] << 8 | packet[DATA2];
 
             // Conversions according to datasheets of Sht2x
@@ -349,7 +354,10 @@ bool getNode(NodeStr * accData, uint8_t & len)
             humi *= (humidRead & 0xFFFC);
             humi >>= 16;
 
+            if(humi != 0){
             tmp->intValues[0] += (uint16_t) humi * 10; // Don't know why the decimal place is wrong
+            tmp->humCount++;
+            }
 
             // TODO: ADC conversion of light sensor?
             break;

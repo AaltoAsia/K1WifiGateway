@@ -53,7 +53,9 @@ struct _NodeStr{
     uint16_t Last_seq;
     uint16_t length;
     
-    int8_t treeCount;
+    int8_t humCount;
+    int8_t tempCount;
+    int8_t lumCount;
     int8_t co2Count;
     int8_t pirCount;
     //int8_t pirCount not neccessary
