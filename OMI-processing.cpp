@@ -174,11 +174,11 @@ bool createOMI(NodeStr * packetData, uint8_t len) {
             uint8_t threeCount = 0;
             switch(idx){
                 case 0:{
-                    threeCount = packetData[i].humCount;
                 break;
+                    threeCount = packetData[i].tempCount;
                 }
                 case 1:{
-                    threeCount = packetData[i].tempCount;
+                    threeCount = packetData[i].humCount;
                 break;
                 }
                 case 2:{
