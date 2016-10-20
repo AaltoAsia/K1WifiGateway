@@ -338,7 +338,7 @@ bool getNode(NodeStr * accData, uint8_t & len)
             uint16_t tempRead = (packet[DATA1] << 8 | packet[DATA0]) * 100;
             if(tempRead != 0) {
                 DBGSTREAM.printf(FS("got lum raw value(x100)  : %x\r\n"), tempRead );
-                tmp->intValues[2] += tempRead;
+                tmp->intValues[LIGHT_I] += tempRead;
                 tmp->lumCount++;
             }
             tempRead = packet[DATA5] << 8 | packet[DATA4];
@@ -349,7 +349,7 @@ bool getNode(NodeStr * accData, uint8_t & len)
 
             if(temp != 0){
                 DBGSTREAM.printf(FS("got temp raw value  : %x\r\n"), (uint16_t) packet[DATA5] << 8 | packet[DATA4]);
-                tmp->intValues[0] += (uint16_t) temp;
+                tmp->intValues[TEMPERATURE_I] += (uint16_t) temp;
                 tmp->tempCount++;
             }
             uint16_t humidRead = packet[DATA3] << 8 | packet[DATA2];
@@ -361,7 +361,7 @@ bool getNode(NodeStr * accData, uint8_t & len)
 
             if(humi != 0){
     DBGSTREAM.printf(FS("got humidity raw value  : %x\r\n"), (uint16_t) packet[DATA3] << 8 | packet[DATA2]  );
-            tmp->intValues[1] += (uint16_t) humi * 10; // Don't know why the decimal place is wrong
+            tmp->intValues[HUMIDITY_I] += (uint16_t) humi * 10; // Don't know why the decimal place is wrong
             tmp->humCount++;
             }
 

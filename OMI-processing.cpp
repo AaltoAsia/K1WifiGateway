@@ -171,21 +171,23 @@ bool createOMI(NodeStr * packetData, uint8_t len) {
     if((packetData[i].humCount + packetData[i].tempCount + packetData[i].lumCount) > 0){
         DBGSTREAM.printf(FS("[OMI-processing] temp,humi,light InfoItem.\r\n"));
         for(uint8_t idx = 0; idx < 3; idx++){ //loop temp humi illu values
+            
             uint8_t threeCount = 0;
             switch(idx){
-                case 0:{
-                break;
+                case TEMPERATURE_I:{
                     threeCount = packetData[i].tempCount;
+                break;
                 }
-                case 1:{
+                case HUMIDITY_I:{
                     threeCount = packetData[i].humCount;
                 break;
                 }
-                case 2:{
+                case LIGHT_I:{
                     threeCount = packetData[i].lumCount;
                 break;
                 }
             }
+            if(threeCount == 0) continue;
             String(((float)packetData[i].intValues[idx] * 0.01) / threeCount ).toCharArray(valueStr,VALUE_LEN);
             omiAddInfoItem(getTypeName(TH20_OSCILLOSCOPE, idx), valueStr); // TODO: select the data
         }
