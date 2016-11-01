@@ -175,18 +175,22 @@ bool createOMI(NodeStr * packetData, uint8_t len) {
             uint8_t threeCount = 0;
             switch(idx){
                 case TEMPERATURE_I:{
+                    DBGSTREAM.printf(FS("[OMI-processing] temp.\r\n"));
                     threeCount = packetData[i].tempCount;
                 break;
                 }
                 case HUMIDITY_I:{
+                    DBGSTREAM.printf(FS("[OMI-processing] humi.\r\n"));
                     threeCount = packetData[i].humCount;
                 break;
                 }
                 case LIGHT_I:{
+                    DBGSTREAM.printf(FS("[OMI-processing] light.\r\n"));
                     threeCount = packetData[i].lumCount;
                 break;
                 }
             }
+
             if(threeCount == 0) continue;
             String(((float)packetData[i].intValues[idx] * 0.01) / threeCount ).toCharArray(valueStr,VALUE_LEN);
             omiAddInfoItem(getTypeName(TH20_OSCILLOSCOPE, idx), valueStr); // TODO: select the data

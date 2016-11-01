@@ -265,6 +265,7 @@ void loop() {
               } 
           }
           //reset array
+          DBGSTREAM.printf(FS("Resetting data, array length was %u \r\n" ), numValues);
           for(int i = 0; i<numValues; i++){
               memset(accData[i].intValues, 0, 5);
               accData[i].Id = 0;
