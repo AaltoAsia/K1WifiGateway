@@ -170,8 +170,15 @@ bool createOMI(NodeStr * packetData, uint8_t len) {
 
     if((packetData[i].humCount + packetData[i].tempCount + packetData[i].lumCount) > 0){
         DBGSTREAM.printf(FS("[OMI-processing] temp,humi,light InfoItem.\r\n"));
+
+        DBGSTREAM.printf(FS("[OMI-processing] humidityCount: %u \r\n"), packetData[i].humCount);
+        DBGSTREAM.printf(FS("[OMI-processing] tempCount: %u\r\n"), packetData[i].tempCount); 
+        DBGSTREAM.printf(FS("[OMI-processing] lumCount: %u\r\n"), packetData[i].lumCount);
+
         for(uint8_t idx = 0; idx < 3; idx++){ //loop temp humi illu values
             
+
+
             uint8_t threeCount = 0;
             switch(idx){
                 case TEMPERATURE_I:{
@@ -190,6 +197,9 @@ bool createOMI(NodeStr * packetData, uint8_t len) {
                 break;
                 }
             }
+            
+            
+            DBGSTREAM.printf(FS("[OMI-processing] intValue: %u\r\n"), packetData[i].intValues[idx]);
 
             if(threeCount == 0) continue;
             String(((float)packetData[i].intValues[idx] * 0.01) / threeCount ).toCharArray(valueStr,VALUE_LEN);
