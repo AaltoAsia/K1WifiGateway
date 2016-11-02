@@ -263,7 +263,17 @@ bool getNode(NodeStr * accData, uint8_t & len)
         tmp->Id = id;
         tmp->Type = type;
         tmp->Last_seq = seq;
-        memset(tmp->intValues, 0, 5);
+        if(tmp->humCount == 0)
+            tmp->intValues[HUMIDITY_I] = 0;
+        if(tmp->tempCount == 0)
+            tmp->intValues[TEMPERATURE_I] = 0;
+        if(tmp->lumCount == 0)
+            tmp->intValues[LIGHT_I] = 0;
+        if(tmp->co2Count == 0)
+            tmp->intValues[3] = 0;
+        if(tmp->pirCount == 0)
+            tmp->intValues[4] = 0;
+        //memset(tmp->intValues, 0, 5);
         tmp->packetLost = false;
 
         if(packet[PROTO] == SERIAL_PROTO_PACKET_ACK )
