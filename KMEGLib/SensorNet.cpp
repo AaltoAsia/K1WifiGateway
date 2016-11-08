@@ -168,9 +168,6 @@ NodeStr * getArrayPos(NodeStr * accData, uint8_t & len, uint16_t id)
 {
     for(uint8_t i = 0; i <= len; i++)
     {
-        if(i == len){
-            break;//return &accData[len];
-        }
         if(accData[i].Id == id){
             return &accData[i];
         }
@@ -263,16 +260,7 @@ bool getNode(NodeStr * accData, uint8_t & len)
         tmp->Id = id;
         tmp->Type = type;
         tmp->Last_seq = seq;
-        if(tmp->humCount == 0)
-            tmp->intValues[HUMIDITY_I] = 0;
-        if(tmp->tempCount == 0)
-            tmp->intValues[TEMPERATURE_I] = 0;
-        if(tmp->lumCount == 0)
-            tmp->intValues[LIGHT_I] = 0;
-        if(tmp->co2Count == 0)
-            tmp->intValues[3] = 0;
-        if(tmp->pirCount == 0)
-            tmp->intValues[4] = 0;
+
         //memset(tmp->intValues, 0, 5);
         tmp->packetLost = false;
 
@@ -303,7 +291,7 @@ bool getNode(NodeStr * accData, uint8_t & len)
             tmp->Type = FAIL_OSCILLOSCOPE;
             tmp->Last_seq = 0;
             tmp->Rssi = 0; // dBm - offset?
-            memset(tmp->intValues, 0, 5);
+            //memset(tmp->intValues, 0, 5);
             tmp->packetLost = true;
 
             return true; // we have a failure packet to send

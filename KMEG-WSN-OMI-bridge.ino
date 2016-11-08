@@ -120,6 +120,9 @@ void checkForUpdates() {
 }
 
 bool commsTested = false;
+
+void resetArray(uint8_t numV);
+
 void setup() {
 
     DBGSTREAM.begin(115200); // Debugging output at 115200 baud rate
@@ -202,7 +205,7 @@ void setup() {
     DBGSTREAM.println();
     DBGSTREAM.println(F("[SETUP] YGGDRASIL link ok"));
     DBGSTREAM.println();
-
+    resetArray(20);
 }
 
 
@@ -237,7 +240,23 @@ void sendOK(){
     delay(512);
     YGGDRASIL.println(ok);
 }
-
+void resetArray(uint8_t numV) {
+    for(int i = 0; i<numV; i++){
+        memset(accData[i].intValues, 0, 5);
+        accData[i].Id = 0;
+        accData[i].Last_seq = 0;
+        accData[i].length = 0;
+        accData[i].humCount = 0;
+        accData[i].tempCount = 0;
+        accData[i].lumCount = 0;
+        accData[i].co2Count = 0;
+        accData[i].pirCount = 0;
+        accData[i].Rssi = 0;
+        accData[i].packetLost = false;
+        accData[i].Ack = false;
+    }
+    numValues = 0;   
+}
 void loop() {
 #if HACK_STRATEGY & HACK_ACTIVE_TX
 #warning Connect TX line, that might short stuff if no diodes and pullup present
@@ -266,22 +285,7 @@ void loop() {
           }
           //reset array
           DBGSTREAM.printf(FS("Resetting data, array length was %u \r\n" ), numValues);
-          for(int i = 0; i<numValues; i++){
-              memset(accData[i].intValues, 0, 5);
-              accData[i].Id = 0;
-              accData[i].Last_seq = 0;
-              accData[i].length = 0;
-              accData[i].humCount = 0;
-              accData[i].tempCount = 0;
-              accData[i].lumCount = 0;
-              accData[i].co2Count = 0;
-              accData[i].pirCount = 0;
-              accData[i].Rssi = 0;
-              accData[i].packetLost = false;
-              accData[i].Ack = false;
-       
-          }
-          numValues = 0;
+          resetArray(numValues);
       }  
     }
 
