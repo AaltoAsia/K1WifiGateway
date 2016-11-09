@@ -361,7 +361,7 @@ bool getNode(NodeStr * accData, uint8_t & len)
 
             if(humi != 0){
     DBGSTREAM.printf(FS("got humidity raw value  : %x\r\n"), (uint16_t) packet[DATA3] << 8 | packet[DATA2]  );
-            tmp->intValues[HUMIDITY_I] += (uint16_t) humi * 10; // Don't know why the decimal place is wrong
+            tmp->intValues[HUMIDITY_I] += (uint16_t) humi; // Don't know why the decimal place is wrong
             tmp->humCount++;
             }
 
