@@ -178,22 +178,28 @@ bool createOMI(NodeStr * packetData, uint8_t len) {
         for(uint8_t idx = 0; idx < 3; idx++){ //loop temp humi illu values
             
 
-
+            uint32_t threeValue = 0;
             uint8_t threeCount = 0;
             switch(idx){
                 case TEMPERATURE_I:{
                     DBGSTREAM.printf(FS("[OMI-processing] temp.\r\n"));
                     threeCount = packetData[i].tempCount;
+                    threeValue = packetData[i].intValues[idx];
                 break;
                 }
                 case HUMIDITY_I:{
                     DBGSTREAM.printf(FS("[OMI-processing] humi.\r\n"));
                     threeCount = packetData[i].humCount;
+                    threeValue = packetData[i].intValues[idx];
                 break;
                 }
                 case LIGHT_I:{
                     DBGSTREAM.printf(FS("[OMI-processing] light.\r\n"));
                     threeCount = packetData[i].lumCount;
+                    threeValue = packetData[i].intValues[idx];
+                    threeValue *= 6250;
+                    threeValue >>= 12;
+                    threeValue = threeValue * 1.5 + 0.5; //rounding fix;
                 break;
                 }
             }
