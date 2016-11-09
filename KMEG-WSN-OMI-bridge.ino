@@ -242,7 +242,6 @@ void sendOK(){
 }
 void resetArray(uint8_t numV) {
     for(int i = 0; i<numV; i++){
-        DBGSTREAM.printf(FS("SIZEOF struct is: %u \r\n" ), sizeof(accData[i]));
         memset(&accData[i], 0, sizeof(accData[i]));
     }
     numValues = 0;   

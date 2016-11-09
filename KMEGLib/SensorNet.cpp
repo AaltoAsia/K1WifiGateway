@@ -343,7 +343,8 @@ bool getNode(NodeStr * accData, uint8_t & len)
             // Conversions according to datasheets of Sht2x
             uint32_t temp = 17572;
             temp *= (uint32_t)(tempRead & 0xFFFC);
-            temp >>= 16;
+            temp >>= 14;
+            temp -= 4685;
 
             if(temp != 0){
                 DBGSTREAM.printf(FS("got temp raw value  : %x\r\n"), (uint16_t) packet[DATA5] << 8 | packet[DATA4]);
@@ -355,7 +356,8 @@ bool getNode(NodeStr * accData, uint8_t & len)
             // Conversions according to datasheets of Sht2x
             uint32_t humi = (uint32_t)12500;
             humi *= (humidRead & 0xFFFC);
-            humi >>= 16;
+            humi >>= 12;
+            humi -= 600;
 
             if(humi != 0){
     DBGSTREAM.printf(FS("got humidity raw value  : %x\r\n"), (uint16_t) packet[DATA3] << 8 | packet[DATA2]  );
