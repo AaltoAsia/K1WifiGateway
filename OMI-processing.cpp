@@ -208,7 +208,7 @@ bool createOMI(NodeStr * packetData, uint8_t len) {
             DBGSTREAM.printf(FS("[OMI-processing] intValue: %u\r\n"), packetData[i].intValues[idx]);
 
             if(threeCount == 0) continue;
-            String(((float)packetData[i].intValues[idx] * 0.01) / threeCount ).toCharArray(valueStr,VALUE_LEN);
+            String(((float) threeValue * 0.01) / threeCount ).toCharArray(valueStr,VALUE_LEN);
             omiAddInfoItem(getTypeName(TH20_OSCILLOSCOPE, idx), valueStr); // TODO: select the data
         }
     }
