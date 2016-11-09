@@ -4,10 +4,10 @@
 #include <ESP8266WiFi.h> // For mac address name wifi bridge object
 
 // How many object can be stored in http buffer for one request
-#define MAX_OBJECTS 1
+#define MAX_OBJECTS 16
 
 // How many items can be stored in http buffer for one write request
-#define MAX_ITEMS_PER_WRITE 6
+#define MAX_ITEMS_PER_WRITE 16
 
 // How many characters is max size for InfoItem name + value
 #define MAX_II_NAME_VALUE_SIZE 40
