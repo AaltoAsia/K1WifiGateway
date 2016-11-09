@@ -242,18 +242,7 @@ void sendOK(){
 }
 void resetArray(uint8_t numV) {
     for(int i = 0; i<numV; i++){
-        memset(accData[i].intValues, 0, 5);
-        accData[i].Id = 0;
-        accData[i].Last_seq = 0;
-        accData[i].length = 0;
-        accData[i].humCount = 0;
-        accData[i].tempCount = 0;
-        accData[i].lumCount = 0;
-        accData[i].co2Count = 0;
-        accData[i].pirCount = 0;
-        accData[i].Rssi = 0;
-        accData[i].packetLost = false;
-        accData[i].Ack = false;
+        memset(&accData[i], 0, sizeof(accData[i]));
     }
     numValues = 0;   
 }
