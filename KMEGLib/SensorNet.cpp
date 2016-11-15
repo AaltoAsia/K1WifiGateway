@@ -303,7 +303,6 @@ bool getNode(NodeStr * accData, uint8_t & len)
 
     switch (type) {
         case PIR_OSCILLOSCOPE: {
-            tmp->pirCount++;
             // casting to struct has fundamental problems
             //pir_oscilloscope_t* pir = (pir_oscilloscope_t*)&packet[sizeof(serial_header_t)];
             //tmp->Data.singleInt = pir->interrupt;
