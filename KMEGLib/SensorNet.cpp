@@ -259,10 +259,12 @@ bool getNode(NodeStr * accData, uint8_t & len)
 
         //memset(tmp->intValues, 0, 5);
 
-        if( packet[SERTYPE] % 2)
+        if( packet[SERTYPE] % 2){
             tmp->Rssi = packet[size-3];
-        else
+            tmp->RssiCount++;
+        } else {
             tmp->Rssi = 0;
+        }
 
 #if DBG
         DBGSTREAM.printf(FS("Received Node : %d\r\n"), tmp->Id);
