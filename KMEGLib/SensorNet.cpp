@@ -326,7 +326,7 @@ bool getNode(NodeStr * accData, uint8_t & len)
 
             //TEMPERATURE
             tempRead = packet[DATA5] << 8 | packet[DATA4];
-            tmp->intValues[TEMPERATURE_I] += (tempRead & 0xFFFC)
+            tmp->intValues[TEMPERATURE_I] += (tempRead & 0xFFFC);
 
             DBGSTREAM.printf(FS("got temp raw value  : %x\r\n"), (uint16_t) packet[DATA5] << 8 | packet[DATA4]);
            
@@ -334,13 +334,13 @@ bool getNode(NodeStr * accData, uint8_t & len)
 
             //HUMIDITY
             tempRead = packet[DATA3] << 8 | packet[DATA2];
-            tmp->intvalues[HUMIDITY_I] += (tempRead & 0xFFFC)
+            tmp->intValues[HUMIDITY_I] += (tempRead & 0xFFFC);
 
             DBGSTREAM.printf(FS("got humidity raw value  : %x\r\n"), (uint16_t) packet[DATA3] << 8 | packet[DATA2]  );
 
             
             //increase counter
-            tmp->threeCount++
+            tmp->threeCount++;
             // TODO: ADC conversion of light sensor?
             break;
         }
