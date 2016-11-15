@@ -261,7 +261,8 @@ bool getNode(NodeStr * accData, uint8_t & len)
 
         if( packet[SERTYPE] % 2){
             tmp->Rssi = packet[size-3];
-            tmp->RssiCount++;
+            if(tmp->Rssi != 0)
+                tmp->RssiCount++;
         } else {
             tmp->Rssi = 0;
         }

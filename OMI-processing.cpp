@@ -229,7 +229,7 @@ bool createOMI(NodeStr * packetData, uint8_t len) {
     if(packetData[i].RssiCount > 0){
         DBGSTREAM.printf(FS("[OMI-processing] RSSI InfoItem.\r\n"));
         String(packetData[i].Rssi / packetData[i].RssiCount).toCharArray(valueStr, VALUE_LEN);
-       omiAddInfoItem("rssi", valueStr);
+       omiAddInfoItem("Rssi", valueStr);
     }
 
     omiCloseObject();
