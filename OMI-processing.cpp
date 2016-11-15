@@ -185,7 +185,7 @@ bool createOMI(NodeStr * packetData, uint8_t len) {
                     threeValue = 17572; //constant from the datasheets
                     threeValue *= packetData[i].intValues[idx];
                     threeValue >>= 14; //divide by 2^14
-                    threeValue -= 4685;
+                    threeValue -= (4685 * packetData[i].threeCount);
                 break;
                 }
                 case HUMIDITY_I:{
@@ -193,7 +193,7 @@ bool createOMI(NodeStr * packetData, uint8_t len) {
                     threeValue = 12500; //constant from the datasheets
                     threeValue *= packetData[i].intValues[idx];
                     threeValue >>= 12; //divide by 2^14
-                    threeValue -= 600;                    
+                    threeValue -= (600 * packetData[i].threeCount);
                 break;
                 }
                 case LIGHT_I:{
