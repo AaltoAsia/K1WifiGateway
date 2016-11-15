@@ -258,16 +258,8 @@ bool getNode(NodeStr * accData, uint8_t & len)
     if(crcCheck(packet, size)){
         tmp = getArrayPos(accData, len, id);
         tmp->Id = id;
-        tmp->Type = type;
-        tmp->Last_seq = seq;
 
         //memset(tmp->intValues, 0, 5);
-        tmp->packetLost = false;
-
-        if(packet[PROTO] == SERIAL_PROTO_PACKET_ACK )
-            tmp->Ack = true;
-        else
-            tmp->Ack = false;
 
         if( packet[SERTYPE] % 2)
             tmp->Rssi = packet[size-3];
@@ -276,7 +268,6 @@ bool getNode(NodeStr * accData, uint8_t & len)
 
 #if DBG
         DBGSTREAM.printf(FS("Received Node : %d\r\n"), tmp->Id);
-        DBGSTREAM.printf(FS("Last_seq     : %x\r\n"), tmp->Last_seq);
 #endif
 
     }
@@ -288,11 +279,8 @@ bool getNode(NodeStr * accData, uint8_t & len)
         if (getNodeIndex(id) != 0xFFFF) {
             tmp = getArrayPos(accData, len, id);
             tmp->Id = id;
-            tmp->Type = FAIL_OSCILLOSCOPE;
-            tmp->Last_seq = 0;
             tmp->Rssi = 0; // dBm - offset?
             //memset(tmp->intValues, 0, 5);
-            tmp->packetLost = true;
 
             return true; // we have a failure packet to send
         } else {
@@ -305,7 +293,7 @@ bool getNode(NodeStr * accData, uint8_t & len)
     baseInfo->type = packet[sizeof(serial_header_t)+1];
     baseInfo->type = packet[sizeof(serial_header_t)];
 
-    tmp->Type = baseInfo->type;
+    type = baseInfo->type;
 
 #if DBG
     // packet information 
@@ -315,7 +303,7 @@ bool getNode(NodeStr * accData, uint8_t & len)
     DBGSTREAM.printf(FS("packet length: %x\r\n"), info->length + sizeof(serial_header_t) );
 #endif	
 
-    switch (tmp->Type) {
+    switch (type) {
         case PIR_OSCILLOSCOPE: {
             tmp->pirCount++;
             // casting to struct has fundamental problems
@@ -333,38 +321,29 @@ bool getNode(NodeStr * accData, uint8_t & len)
 
             //memcpy(tmp->Data.threeInt, packet+DATA5, 3 * sizeof(uint16_t)); // three shorts
 
-            uint16_t tempRead = (packet[DATA1] << 8 | packet[DATA0]) * 100;
-            if(tempRead != 0) {
-                DBGSTREAM.printf(FS("got lum raw value(x100)  : %x\r\n"), tempRead );
-                tmp->intValues[LIGHT_I] += tempRead;
-                tmp->lumCount++;
-            }
+
+            //LIGHT
+            uint16_t tempRead = (packet[DATA1] << 8 | packet[DATA0]);
+            DBGSTREAM.printf(FS("got lum raw value(x100)  : %x\r\n"), tempRead );
+            tmp->intValues[LIGHT_I] += tempRead;
+
+            //TEMPERATURE
             tempRead = packet[DATA5] << 8 | packet[DATA4];
-            // Conversions according to datasheets of Sht2x
-            uint32_t temp = 17572;
-            temp *= (uint32_t)(tempRead & 0xFFFC);
-            temp >>= 14;
-            temp -= 4685;
+            tmp->intValues[TEMPERATURE_I] += (tempRead & 0xFFFC)
 
-            if(temp != 0){
-                DBGSTREAM.printf(FS("got temp raw value  : %x\r\n"), (uint16_t) packet[DATA5] << 8 | packet[DATA4]);
-                tmp->intValues[TEMPERATURE_I] += (uint16_t) temp;
-                tmp->tempCount++;
-            }
-            uint16_t humidRead = packet[DATA3] << 8 | packet[DATA2];
+            DBGSTREAM.printf(FS("got temp raw value  : %x\r\n"), (uint16_t) packet[DATA5] << 8 | packet[DATA4]);
+           
 
-            // Conversions according to datasheets of Sht2x
-            uint32_t humi = (uint32_t)12500;
-            humi *= (humidRead & 0xFFFC);
-            humi >>= 12;
-            humi -= 600;
 
-            if(humi != 0){
-    DBGSTREAM.printf(FS("got humidity raw value  : %x\r\n"), (uint16_t) packet[DATA3] << 8 | packet[DATA2]  );
-            tmp->intValues[HUMIDITY_I] += (uint16_t) humi; // Don't know why the decimal place is wrong
-            tmp->humCount++;
-            }
+            //HUMIDITY
+            tempRead = packet[DATA3] << 8 | packet[DATA2];
+            tmp->intvalues[HUMIDITY_I] += (tempRead & 0xFFFC)
 
+            DBGSTREAM.printf(FS("got humidity raw value  : %x\r\n"), (uint16_t) packet[DATA3] << 8 | packet[DATA2]  );
+
+            
+            //increase counter
+            tmp->threeCount++
             // TODO: ADC conversion of light sensor?
             break;
         }

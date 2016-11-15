@@ -352,6 +352,9 @@ uint16_t getNodeIndex(uint16_t id) {
     // 2ND FLOOR
     RANGE(4201, 4239)
 
+    // 1ST FLOOR
+    RANGE(4601, 4643)
+
     // For testing
     RANGE(4207, 4207)
     RANGE(4234, 4234)

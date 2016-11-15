@@ -168,36 +168,38 @@ bool createOMI(NodeStr * packetData, uint8_t len) {
     DBGSTREAM.printf(FS("[OMI-processing] Creating Object. getNodeName(%i).\r\n"), packetData[i].Id);
     omiAddObject(getNodeName(packetData[i].Id));
 
-    if((packetData[i].humCount + packetData[i].tempCount + packetData[i].lumCount) > 0){
+    if(packetData[i].threeCount > 0){ //check if we have any values
         DBGSTREAM.printf(FS("[OMI-processing] temp,humi,light InfoItem.\r\n"));
 
-        DBGSTREAM.printf(FS("[OMI-processing] humidityCount: %u \r\n"), packetData[i].humCount);
-        DBGSTREAM.printf(FS("[OMI-processing] tempCount: %u\r\n"), packetData[i].tempCount); 
-        DBGSTREAM.printf(FS("[OMI-processing] lumCount: %u\r\n"), packetData[i].lumCount);
+        DBGSTREAM.printf(FS("[OMI-processing] threeCount: %u \r\n"), packetData[i].threeCount);
 
         for(uint8_t idx = 0; idx < 3; idx++){ //loop temp humi illu values
             
+            //do sensor value conversations here
+            //conversions according to datasheets of Sht2x
 
-            uint32_t threeValue = 0;
-            uint8_t threeCount = 0;
+            int32_t threeValue = 0;
             switch(idx){
                 case TEMPERATURE_I:{
                     DBGSTREAM.printf(FS("[OMI-processing] temp.\r\n"));
-                    threeCount = packetData[i].tempCount;
-                    threeValue = packetData[i].intValues[idx];
+                    threeValue = 17572; //constant from the datasheets
+                    threeValue *= packetData[i].intValues[idx];
+                    threeValue >>= 14; //divide by 2^14
+                    threeValue -= 4685;
                 break;
                 }
                 case HUMIDITY_I:{
                     DBGSTREAM.printf(FS("[OMI-processing] humi.\r\n"));
-                    threeCount = packetData[i].humCount;
-                    threeValue = packetData[i].intValues[idx];
+                    threeValue = 12500; //constant from the datasheets
+                    threeValue *= packetData[i].intValues[idx];
+                    threeValue >>= 12; //divide by 2^14
+                    threeValue -= 600;                    
                 break;
                 }
                 case LIGHT_I:{
                     DBGSTREAM.printf(FS("[OMI-processing] light.\r\n"));
-                    threeCount = packetData[i].lumCount;
-                    threeValue = packetData[i].intValues[idx];
-                    threeValue *= 6250;
+                    threeValue = 6250; //unsure about this constant
+                    threeValue *= packetData[i].intValues[idx];
                     threeValue >>= 12;
                     threeValue = threeValue * 1.5 + 0.5; //rounding fix;
                 break;
@@ -207,9 +209,9 @@ bool createOMI(NodeStr * packetData, uint8_t len) {
             
             DBGSTREAM.printf(FS("[OMI-processing] intValue: %u\r\n"), packetData[i].intValues[idx]);
 
-            if(threeCount == 0) continue;
-            String(((float) threeValue * 0.01) / threeCount ).toCharArray(valueStr,VALUE_LEN);
-            omiAddInfoItem(getTypeName(TH20_OSCILLOSCOPE, idx), valueStr); // TODO: select the data
+            if(packetData[i].threeCount == 0) continue;
+            String(((float) threeValue * 0.01) / packetData[i].threeCount ).toCharArray(valueStr,VALUE_LEN);
+            omiAddInfoItem(getTypeName(TH20_OSCILLOSCOPE, idx), valueStr);
         }
     }
 
@@ -219,10 +221,15 @@ bool createOMI(NodeStr * packetData, uint8_t len) {
         omiAddInfoItem(getTypeName(CO2S100_OSCILLOSCOPE), valueStr);
     }
 
-    if(packetData[i].pirCount > 0){
+    if((packetData[i].threeCount + packetData[i].RssiCount + packetData[i].co2Count) > 0){
         DBGSTREAM.printf(FS("[OMI-processing] PIR InfoItem.\r\n"));
         String(packetData[i].intValues[4]).toCharArray(valueStr,VALUE_LEN);
         omiAddInfoItem(getTypeName(PIR_OSCILLOSCOPE), valueStr);
+    }
+    if(packetData[i].RssiCount > 0){
+        DBGSTREAM.printf(FS("[OMI-processing] RSSI InfoItem.\r\n"));
+        String(packetData[i].Rssi / packetData[i].RssiCount).toCharArray(valueStr, VALUE_LEN);
+       omiAddInfoItem("rssi", valueStr);
     }
 
     omiCloseObject();

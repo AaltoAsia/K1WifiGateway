@@ -49,20 +49,11 @@ struct _NodeStr{
     //uint16_t singleInt;
 
     uint16_t Id;
-    uint16_t Type; //change to bit word telling what sensor values we have obtained.
-    uint16_t Last_seq;
-    uint16_t length;
-    
-    int8_t humCount;
-    int8_t tempCount;
-    int8_t lumCount;
+    uint16_t Rssi;  // Receive signal strength indicator
+
+    int8_t threeCount;
     int8_t co2Count;
-    int8_t pirCount;
-    //int8_t pirCount not neccessary
-    int8_t Rssi; // Receive signal strength indicator
-    bool packetLost; // latest packet was lost in serial comms
-    bool Ack;
-    //pad to 24bytes ?
+    int8_t RssiCount;
 
 
 }__attribute__((packed));
