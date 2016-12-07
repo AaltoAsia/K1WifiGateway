@@ -130,6 +130,7 @@ class ESPCertificateUpdate : ESP8266HTTPUpdate {
 
         HttpsCertificateClient http;
         http.begin(url, fingerprint, certificate, cert_len, private_key, key_len);
+        yield();
         return handleUpdate(http, currentVersion);
     };
 };

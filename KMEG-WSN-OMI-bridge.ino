@@ -55,12 +55,14 @@ static HTTPClient http;
 static ESPCertificateUpdate ESPUpdater;
 
 void checkForUpdates() {
+    yield();
     t_httpUpdate_return ret = ESPUpdater.update(
         UPDATE_URL,
         String(_BuildInfo.src_version) + "_" + _BuildInfo.time,
         OMI_CERT_FINGERPRINT,
         client_crt, client_crt_len, client_key, client_key_len);
 
+    yield();
     switch(ret) {
         case HTTP_UPDATE_FAILED:
             DBGSTREAM.println("[update] Update failed.");

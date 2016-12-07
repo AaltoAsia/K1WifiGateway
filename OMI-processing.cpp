@@ -131,6 +131,7 @@ bool createOMI(NodeStr * packetData, uint8_t len) {
     char valueStr[VALUE_LEN];
 
     {
+    yield();
     omiHeader();
 
     omiAddObject("K1");
@@ -221,6 +222,7 @@ bool createOMI(NodeStr * packetData, uint8_t len) {
 
     omiCloseObject();
     }
+    yield();
     return omiFooter(); // should return false if buffer overflowed
     
 }
@@ -276,6 +278,7 @@ bool trySend(HttpsCertificateClient& http) {
 #else
 bool trySend(HTTPClient& http) {
 #endif
+    yield();
     bool isSuccess=false;
     {
     DBGSTREAM.println(F("[HTTP] begin..."));
