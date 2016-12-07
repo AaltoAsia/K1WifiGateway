@@ -3,53 +3,6 @@
  * NOTE: See also Makefile for configuration documentation!
  */
 
-// Select hacking strategy, combination of:
-
-// * Passive listen only, requires that the wifi chip connects properly and sends proper answers
-#define HACK_PASSIVE 0
-
-// * Sends [OK] answers through the tx line of wifi chip, actively tries to flood them to the mcu
-#define HACK_ACTIVE_TX 1
-
-// * Sends GPIO command to set data/command-mode pin (31) to zero
-#define HACK_DATA_GPIO0 2
-// * Sends GPIO command to set data/command-mode pin (31) to one
-#define HACK_DATA_GPIO1 4
-
-// * Sends configuration to disable HW trigger for changing data/command mode (default: GPIO29,pin46)
-#define HACK_DISABLE_HW_MODE_TRIGGER 8
-
-// NOTE: Not implemented really
-#ifndef HACK_STRATEGY
-#define HACK_STRATEGY HACK_PASSIVE
-#endif
-
-// Fetches updates from this
-#define UPDATE_URL FS("https://otaniemi3d.cs.hut.fi/k1updates")
-// O-MI Node for write requests
-#define OMI_URL FS("https://otaniemi3d.cs.hut.fi/omi/node/")
-
-// SHA1 Fingerprint, can be copied from browser, click the lock next to url bar and view certificate
-// NOTE: Probably needs updating if certificate updates
-#define OMI_CERT_FINGERPRINT String("6D 7F AE 98 E6 4A 74 76 45 26 7F 66 14 3C 9F 58 43 CB 09 B5")
-
-// Retries for sending if http fails
-#define MAX_RETRIES 1
-
-// Loads the client certificate from SPIFFS files: /client.crt and /client.key
-// WARNING: Requires modified ESP8266HttpClient currently (2016-04-08)
-#define USE_CLIENTCERTIFICATE 1
-
-
-// Serial for debugging, connect esp TX to usb serial RX
-#ifndef DBGSTREAM
-#define DBGSTREAM Serial1
-#endif
-// Input for Yggdrasil serial comms, connect this esp RX to TX (marked) pin on bridge pcb
-#ifndef YGGDRASIL
-#define YGGDRASIL Serial
-#endif
-
 
 // LIBRARIES
 #include <Arduino.h>
@@ -59,12 +12,14 @@
 //#include <ESP8266HTTPClient.h>
 #include <ESP8266httpUpdate.h>
 
-#include <buildinfo.h>      // version info
+// included in omi processing (no guard)
+//#include <buildinfo.h>      // version info
 
+#include "Config.h"  // See this for configuration
+#include "MyCertificates.h" 
 #include "HttpsCertificateExtension.h" // Extension to use the easy Http class with client certificates
-#include "MyCertificates.h"     // contains unencrypted client private key and certifiacate in DER format
-#include "SensorNet.h"          // yggdrasil protocol handling
-#include "OMI-processing.cpp"   // makes and sends all O-MI messages
+#include "KMEGLib/SensorNet.h"          // yggdrasil protocol handling
+#include "OMI-processing.h"   // makes and sends all O-MI messages
 
 // Used for a hack in the ESP8266HttpClient that enables certificates when creating tcps context
 

@@ -1,24 +1,11 @@
 
-#include "K1Building.h" // constants and metadata
+#include "Config.h"
+#include "MyCertificates.h" 
+#include "KMEGLib/K1Building.h" // constants and metadata
 #include "SensorNet.h"  // yggdrasil protocol handling
+#include "HttpsCertificateExtension.h"
 #include <ESP8266WiFi.h> // For mac address name wifi bridge object
 
-// How many object can be stored in http buffer for one request
-#define MAX_OBJECTS 16
-
-// How many items can be stored in http buffer for one write request
-#define MAX_ITEMS_PER_WRITE 16
-
-// How many characters is max size for InfoItem name + value
-#define MAX_II_NAME_VALUE_SIZE 40
-
-#define VALUE_LEN 15
-
-//#ifndef OMI_URL
-
-#define OMI_CERT 1
-
-//#endif
 
 
 //enum TrySendRet {
