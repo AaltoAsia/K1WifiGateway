@@ -179,6 +179,7 @@ NodeStr * getArrayPos(NodeStr * accData, uint8_t & len, uint16_t id)
     accData[len].threeCount = 0;
     accData[len].co2Count = 0;
     accData[len].RssiCount = 0; //so that we don't access null values
+    accData[len].intValues[4] = 0xFFFF; //max value for uint16_t
     return &accData[len++];
 }
 
