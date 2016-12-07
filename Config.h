@@ -1,6 +1,7 @@
 #ifndef BRIDGE_CONFIG_H
 #define BRIDGE_CONFIG_H
 
+#include <Arduino.h>
 
 // Has build information (buildtime, versions)
 #include <buildinfo.h>
@@ -52,6 +53,8 @@
 #define YGGDRASIL Serial
 #endif
 
+
+const uint16_t interval = 60000; // interval at which to send data( cap is 10 seconds * 30 = 300 seconds for the PIR sensor resolution)
 
 //////////////////////////////////////////////////////////////
 // Omi-processing
