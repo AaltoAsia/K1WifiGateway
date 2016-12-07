@@ -214,7 +214,7 @@ void setup() {
 NodeStr accData[20]; // = (NodeStr*) malloc(20 * sizeof(NodeStr)); //this is array containing the accumulated Data over the interval defined; add lenght to DEFINE instead of magic value
 static uint8_t sendRetries=0; // retry counter
 unsigned long previousMillis = 0; // last time data was sent
-const uint16_t interval = 20000; // interval at which to send data
+const uint16_t interval = 60000; // interval at which to send data( cap is 10 seconds * 30 = 300 seconds for the PIR sensor resolution)
 uint8_t numValues = 0; //remember to keep this to array size
 
 void handleIncomingData() {
@@ -243,6 +243,7 @@ void sendOK(){
 void resetArray(uint8_t numV) {
     for(int i = 0; i<numV; i++){
         memset(&accData[i], 0, sizeof(accData[i]));
+        accData[i].intValues[4] = 0xFFFF; //max value for uint16_t
     }
     numValues = 0;   
 }

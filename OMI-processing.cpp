@@ -221,7 +221,7 @@ bool createOMI(NodeStr * packetData, uint8_t len) {
         omiAddInfoItem(getTypeName(CO2S100_OSCILLOSCOPE), valueStr);
     }
 
-    if((packetData[i].threeCount + packetData[i].RssiCount + packetData[i].co2Count) > 0){
+    if(packetData[i].intValues[4] <= 30){
         DBGSTREAM.printf(FS("[OMI-processing] PIR InfoItem.\r\n"));
         String(packetData[i].intValues[4]).toCharArray(valueStr,VALUE_LEN);
         omiAddInfoItem(getTypeName(PIR_OSCILLOSCOPE), valueStr);
