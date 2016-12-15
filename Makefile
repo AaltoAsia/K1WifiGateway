@@ -1,6 +1,6 @@
 #SKETCH = 
 
-ESP_ROOT=$(HOME)/Arduino/esp8266
+ESP_ROOT=$(HOME)/Arduino/esp8266gatewayhackversion
 
 LIBS += $(ESP_LIBS)/ESP8266WiFi \
 	$(ESP_LIBS)/ESP8266HTTPClient \
@@ -9,6 +9,7 @@ LIBS += $(ESP_LIBS)/ESP8266WiFi \
 	.
 
 UPLOAD_PORT = /dev/ttyUSB0
+#UPLOAD_SPEED = 115200
 BOARD = d1_mini
 
 FLASH_DEF = 4M1M

@@ -80,6 +80,12 @@ public:
 
         return std::unique_ptr<WiFiClient>(espClient);
     };
+    bool verify(WiFiClient& client, const char* host) override
+    {
+        auto wcs = reinterpret_cast<WiFiClientSecure&>(client);
+        return wcs.verify(_fingerprint.c_str(), host);
+
+    }
 protected:
     const uint8_t* _cert;
     const uint16_t _certLen;

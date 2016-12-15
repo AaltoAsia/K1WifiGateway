@@ -288,6 +288,7 @@ bool trySend(HTTPClient& http) {
 #ifdef OMI_CERT
     http.begin(OMI_URL, OMI_CERT_FINGERPRINT, client_crt, client_crt_len, client_key, client_key_len);
 #else
+#warning("Client certificate is disabled!")
     http.begin(OMI_URL, OMI_CERT_FINGERPRINT);
 #endif
 
