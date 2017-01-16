@@ -27,6 +27,9 @@
 #define HACK_STRATEGY HACK_PASSIVE
 #endif
 
+// Whether to check updates on boot
+#define UPDATE_ON_BOOT 1
+
 // Fetches updates from this
 #define UPDATE_URL FS("https://otaniemi3d.cs.hut.fi/k1updates")
 // O-MI Node for write requests

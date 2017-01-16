@@ -117,8 +117,13 @@ void setup() {
     //WiFi.begin("aalto open", NULL);
 
     http.setReuse(true);
+    
+    // Test internet connection
+
     DBGSTREAM.println(F("[SETUP] Checking for updates..."));
+#if UPDATE_ON_BOOT
     checkForUpdates();
+#endif
 
     DBGSTREAM.println(F("[SETUP] Testing O-MI node link by sending Gateway version data"));
     uint8_t wifiCounter;
