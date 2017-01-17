@@ -113,7 +113,7 @@ Header is the text marked row of islands next to WizFi220 chip.
 
 1. `VCC` ESP <--> `VCC` header
 1. `GND` ESP <--> `GND` header
-1. `GPIO13` (D7) ESP <--> `TX` header
+1. `GPIO13` (D7) ESP <--> `RX` header
 
 WizFi connection replacements:
 
