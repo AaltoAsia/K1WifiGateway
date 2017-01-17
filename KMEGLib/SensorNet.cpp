@@ -164,9 +164,27 @@ uint8_t crcCheck(uint8_t *data, uint8_t len){
     return 0;
 }
 
+NodeStr * getArrayPos(NodeStr * accData, uint8_t & len, uint16_t id)
+{
+    for(uint8_t i = 0; i <= len; i++)
+    {
+        if(accData[i].Id == id){
+            return &accData[i];
+        }
+    }
+    
+    //initializd necessary values
+    accData[len].Id = id;
+    //accData[len].Type = 0;
+    accData[len].threeCount = 0;
+    accData[len].co2Count = 0;
+    accData[len].RssiCount = 0; //so that we don't access null values
+    accData[len].intValues[4] = 0xFFFF; //max value for uint16_t
+    return &accData[len++];
+}
 
 uint8_t packet[MAX_PACKET_SIZE];
-bool getNode(NodeStr * tmp)
+bool getNode(NodeStr * accData, uint8_t & len)
 {
     uint16_t id, seq;
     int size;
@@ -219,7 +237,7 @@ bool getNode(NodeStr * tmp)
 
 
     // Oscilloscope Message type
-    id = packet[NODEID1] <<8;
+    id = packet[NODEID1] << 8;
     id |= packet[NODEID0];
     seq = packet[COUNT1] << 8;
     seq |= packet[COUNT0];
@@ -234,28 +252,24 @@ bool getNode(NodeStr * tmp)
         return false;
     }
 
+    NodeStr * tmp;
 
     if(crcCheck(packet, size)){
-
+        tmp = getArrayPos(accData, len, id);
         tmp->Id = id;
-        tmp->Type = type;
-        tmp->Last_seq = seq;
-        memset(tmp->Data.threeInt, 0, 3);
-        tmp->packetLost = false;
 
-        if(packet[PROTO] == SERIAL_PROTO_PACKET_ACK )
-            tmp->Ack = true;
-        else
-            tmp->Ack = false;
+        //memset(tmp->intValues, 0, 5);
 
-        if( packet[SERTYPE] % 2)
+        if( packet[SERTYPE] % 2){
             tmp->Rssi = packet[size-3];
-        else
+            if(tmp->Rssi != 0)
+                tmp->RssiCount++;
+        } else {
             tmp->Rssi = 0;
+        }
 
 #if DBG
         DBGSTREAM.printf(FS("Received Node : %d\r\n"), tmp->Id);
-        DBGSTREAM.printf(FS("Last_seq     : %x\r\n"), tmp->Last_seq);
 #endif
 
     }
@@ -265,12 +279,10 @@ bool getNode(NodeStr * tmp)
         DBGSTREAM.println(F("[Ygg] CRC FAILURE IN SERIAL!\r\n"));
 
         if (getNodeIndex(id) != 0xFFFF) {
+            tmp = getArrayPos(accData, len, id);
             tmp->Id = id;
-            tmp->Type = FAIL_OSCILLOSCOPE;
-            tmp->Last_seq = 0;
             tmp->Rssi = 0; // dBm - offset?
-            memset(tmp->Data.threeInt, 0, 3);
-            tmp->packetLost = true;
+            //memset(tmp->intValues, 0, 5);
 
             return true; // we have a failure packet to send
         } else {
@@ -283,7 +295,7 @@ bool getNode(NodeStr * tmp)
     baseInfo->type = packet[sizeof(serial_header_t)+1];
     baseInfo->type = packet[sizeof(serial_header_t)];
 
-    tmp->Type = baseInfo->type;
+    type = baseInfo->type;
 
 #if DBG
     // packet information 
@@ -293,49 +305,56 @@ bool getNode(NodeStr * tmp)
     DBGSTREAM.printf(FS("packet length: %x\r\n"), info->length + sizeof(serial_header_t) );
 #endif	
 
-    switch (tmp->Type) {
+    switch (type) {
         case PIR_OSCILLOSCOPE: {
             // casting to struct has fundamental problems
             //pir_oscilloscope_t* pir = (pir_oscilloscope_t*)&packet[sizeof(serial_header_t)];
             //tmp->Data.singleInt = pir->interrupt;
-            tmp->Data.singleInt = packet[DATA5] << 8 | packet[DATA4];
+            tmp->intValues[4] = packet[DATA5] << 8 | packet[DATA4];
+                DBGSTREAM.printf(FS("got pir raw value  : %x\r\n"), tmp->intValues[4] );
             break;
         }
         case TH20_OSCILLOSCOPE: {
+            //tmp->treeCount++;
             // casting to struct has fundamental problems
             //th_oscilloscope_t* th = (th_oscilloscope_t*)&packet[sizeof(serial_header_t)];
             ////tmp->Data.threeInt = {th->temp[0], th->humi[0], th->illu[0]};
 
             //memcpy(tmp->Data.threeInt, packet+DATA5, 3 * sizeof(uint16_t)); // three shorts
 
-            uint16_t tempRead = packet[DATA5] << 8 | packet[DATA4];
-            tmp->Data.threeInt[LIGHT_I] = (packet[DATA1] << 8 | packet[DATA0]) * 100;
 
-            // Conversions according to datasheets of Sht2x
-            uint32_t temp = 17572;
-            temp *= (uint32_t)(tempRead & 0xFFFC);
-            temp >>= 16;
+            //LIGHT
+            uint16_t tempRead = (packet[DATA1] << 8 | packet[DATA0]);
+            DBGSTREAM.printf(FS("got lum raw value(x100)  : %x\r\n"), tempRead );
+            tmp->intValues[LIGHT_I] += tempRead;
 
-            tmp->Data.threeInt[TEMPERATURE_I] = (uint16_t) temp;
+            //TEMPERATURE
+            tempRead = packet[DATA5] << 8 | packet[DATA4];
+            tmp->intValues[TEMPERATURE_I] += (tempRead & 0xFFFC);
 
-            uint16_t humidRead = packet[DATA3] << 8 | packet[DATA2];
+            DBGSTREAM.printf(FS("got temp raw value  : %x\r\n"), (uint16_t) packet[DATA5] << 8 | packet[DATA4]);
+           
 
-            // Conversions according to datasheets of Sht2x
-            uint32_t humi = (uint32_t)12500;
-            humi *= (humidRead & 0xFFFC);
-            humi >>= 16;
 
-            tmp->Data.threeInt[HUMIDITY_I] = (uint16_t) humi * 10; // Don't know why the decimal place is wrong
+            //HUMIDITY
+            tempRead = packet[DATA3] << 8 | packet[DATA2];
+            tmp->intValues[HUMIDITY_I] += (tempRead & 0xFFFC);
 
+            DBGSTREAM.printf(FS("got humidity raw value  : %x\r\n"), (uint16_t) packet[DATA3] << 8 | packet[DATA2]  );
+
+            
+            //increase counter
+            tmp->threeCount++;
             // TODO: ADC conversion of light sensor?
-
             break;
         }
         case CO2S100_OSCILLOSCOPE: {
             // casting to struct has fundamental problems
             //co2_oscilloscope_t* co2 = (co2_oscilloscope_t*)&packet[sizeof(serial_header_t)];
             //tmp->Data.singleInt = co2->readings[0];
-            tmp->Data.singleInt = packet[DATA5] << 8 | packet[DATA4];
+            tmp->co2Count++;
+            tmp->intValues[3] += packet[DATA5] << 8 | packet[DATA4];
+                DBGSTREAM.printf(FS("got co2 raw value  : %x\r\n"), (packet[DATA5] << 8 | packet[DATA4]) );
             break;
         }
         default:

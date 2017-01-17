@@ -1,24 +1,11 @@
 
-#include "K1Building.h" // constants and metadata
+#include "Config.h"
+#include "MyCertificates.h" 
+#include "KMEGLib/K1Building.h" // constants and metadata
 #include "SensorNet.h"  // yggdrasil protocol handling
+#include "HttpsCertificateExtension.h"
 #include <ESP8266WiFi.h> // For mac address name wifi bridge object
 
-// How many object can be stored in http buffer for one request
-#define MAX_OBJECTS 1
-
-// How many items can be stored in http buffer for one write request
-#define MAX_ITEMS_PER_WRITE 6
-
-// How many characters is max size for InfoItem name + value
-#define MAX_II_NAME_VALUE_SIZE 40
-
-#define VALUE_LEN 15
-
-//#ifndef OMI_URL
-
-#define OMI_CERT 1
-
-//#endif
 
 
 //enum TrySendRet {
@@ -140,15 +127,16 @@ bool createBridgeBootOMI() {
     return omiFooter();
 }
 
-bool createOMI(NodeStr& packetData) {
+bool createOMI(NodeStr * packetData, uint8_t len) {
     char valueStr[VALUE_LEN];
 
     {
+    yield();
     omiHeader();
 
     omiAddObject("K1");
 
-
+/*
     if (packetData.Type == FAIL_OSCILLOSCOPE || packetData.packetLost) {
         omiAddObject(FS("Gateways"));
         WiFi.macAddress().toCharArray(valueStr, VALUE_LEN);
@@ -157,14 +145,88 @@ bool createOMI(NodeStr& packetData) {
         String(packetData.Id).toCharArray(valueStr, VALUE_LEN);
         char* info = FS("CRC error, from: ");
         strcat(info, valueStr);
-        omiAddInfoItem("PacketLoss", info);
+        omiAddInfoItem("PacketLoss", info); //buffer might be used for info, not FS available
         return omiFooter();
     }
-
-    DBGSTREAM.printf(FS("[OMI-processing] Creating Object. getNodeName(%i).\r\n"), packetData.Id);
-    omiAddObject(getNodeName(packetData.Id));
+*/ //TODO re-add Gateways object
     }
 
+    for(uint8_t i = 0; i < len; i++)
+    {
+    DBGSTREAM.printf(FS("[OMI-processing] Creating Object. getNodeName(%i).\r\n"), packetData[i].Id);
+    omiAddObject(getNodeName(packetData[i].Id));
+
+    if(packetData[i].threeCount > 0){ //check if we have any values
+        DBGSTREAM.printf(FS("[OMI-processing] temp,humi,light InfoItem.\r\n"));
+
+        DBGSTREAM.printf(FS("[OMI-processing] threeCount: %u \r\n"), packetData[i].threeCount);
+
+        for(uint8_t idx = 0; idx < 3; idx++){ //loop temp humi illu values
+            
+            //do sensor value conversations here
+            //conversions according to datasheets of Sht2x
+
+            int32_t threeValue = 0;
+            switch(idx){
+                case TEMPERATURE_I:{
+                    DBGSTREAM.printf(FS("[OMI-processing] temp.\r\n"));
+                    threeValue = 17572; //constant from the datasheets
+                    threeValue *= packetData[i].intValues[idx];
+                    threeValue >>= 14; //divide by 2^14
+                    threeValue -= (4685 * packetData[i].threeCount);
+                break;
+                }
+                case HUMIDITY_I:{
+                    DBGSTREAM.printf(FS("[OMI-processing] humi.\r\n"));
+                    threeValue = 12500; //constant from the datasheets
+                    threeValue *= packetData[i].intValues[idx];
+                    threeValue >>= 12; //divide by 2^14
+                    threeValue -= (600 * packetData[i].threeCount);
+                break;
+                }
+                case LIGHT_I:{
+                    DBGSTREAM.printf(FS("[OMI-processing] light.\r\n"));
+                    threeValue = 6250; //unsure about this constant
+                    threeValue *= packetData[i].intValues[idx];
+                    threeValue >>= 12;
+                    threeValue = threeValue * 1.5 + 0.5; //rounding fix;
+                break;
+                }
+            }
+            
+            
+            DBGSTREAM.printf(FS("[OMI-processing] intValue: %u\r\n"), packetData[i].intValues[idx]);
+
+            if(packetData[i].threeCount == 0) continue;
+            String(((float) threeValue * 0.01) / packetData[i].threeCount ).toCharArray(valueStr,VALUE_LEN);
+            omiAddInfoItem(getTypeName(TH20_OSCILLOSCOPE, idx), valueStr);
+        }
+    }
+
+    if(packetData[i].co2Count > 0){
+        DBGSTREAM.printf(FS("[OMI-processing] CO2 InfoItem.\r\n"));
+        String(packetData[i].intValues[3] / packetData[i].co2Count).toCharArray(valueStr,VALUE_LEN);
+        omiAddInfoItem(getTypeName(CO2S100_OSCILLOSCOPE), valueStr);
+    }
+
+    if(packetData[i].intValues[4] <= 30){
+        DBGSTREAM.printf(FS("[OMI-processing] PIR InfoItem.\r\n"));
+        String(packetData[i].intValues[4]).toCharArray(valueStr,VALUE_LEN);
+        omiAddInfoItem(getTypeName(PIR_OSCILLOSCOPE), valueStr);
+    }
+    if(packetData[i].RssiCount > 0){
+        DBGSTREAM.printf(FS("[OMI-processing] RSSI InfoItem.\r\n"));
+        String(packetData[i].Rssi / packetData[i].RssiCount).toCharArray(valueStr, VALUE_LEN);
+       omiAddInfoItem("Rssi", valueStr);
+    }
+
+    omiCloseObject();
+    }
+    yield();
+    return omiFooter(); // should return false if buffer overflowed
+    
+}
+/*
     // Parse the values TODO
     {switch (packetData.Type) {
         case TH20_OSCILLOSCOPE: {
@@ -177,7 +239,7 @@ bool createOMI(NodeStr& packetData) {
 
             for (uint8_t idx = 0; idx < 3; ++idx) { // loop temp,humi,illu
                 // convert to human readable (*100)
-                String((float)packetData.Data.threeInt[idx] * 0.01).toCharArray(valueStr,VALUE_LEN);
+                String((float)packetData.intValues[idx] * 0.01).toCharArray(valueStr,VALUE_LEN);
                 omiAddInfoItem(getTypeName(packetData.Type, idx), valueStr); // TODO: select the data
             }
             break;
@@ -197,21 +259,18 @@ bool createOMI(NodeStr& packetData) {
         {
             DBGSTREAM.printf(FS("[OMI-processing] Default InfoItem processing. getTypeName(%i)\r\n"),
                     packetData.Type);
-
-            String(packetData.Data.singleInt).toCharArray(valueStr,VALUE_LEN);
+//XXX TODO FIXME VVVVVVVV 
+            String(packetData.intValues[4]).toCharArray(valueStr,VALUE_LEN);
             omiAddInfoItem(getTypeName(packetData.Type), valueStr);
         }
     }}
+    }
     // Extra data
     if (packetData.Rssi != 0) {
         String((unsigned int)packetData.Rssi).toCharArray(valueStr,VALUE_LEN);
         omiAddInfoItem(FS("Rssi"), valueStr);
     }
-
-    omiCloseObject();
-
-    return omiFooter(); // should return false if buffer overflowed
-}
+*/
 
 
 #ifdef OMI_CERT
@@ -219,6 +278,7 @@ bool trySend(HttpsCertificateClient& http) {
 #else
 bool trySend(HTTPClient& http) {
 #endif
+    yield();
     bool isSuccess=false;
     {
     DBGSTREAM.println(F("[HTTP] begin..."));
@@ -228,6 +288,7 @@ bool trySend(HTTPClient& http) {
 #ifdef OMI_CERT
     http.begin(OMI_URL, OMI_CERT_FINGERPRINT, client_crt, client_crt_len, client_key, client_key_len);
 #else
+#warning("Client certificate is disabled!")
     http.begin(OMI_URL, OMI_CERT_FINGERPRINT);
 #endif
 

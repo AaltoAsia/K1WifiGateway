@@ -21,8 +21,8 @@
  * > openssl x509 -in my_cert.pem -out my_cert -outform DER
  *
  * Then you can use SPIFFS or convert the keys to C code header with
- * > xxd -i client.crt > MyCertificates.h
- * > xxd -i client.key >> MyCertificates.h
+ * > xxd -i client.crt > MyCertificates.cpp
+ * > xxd -i client.key >> MyCertificates.cpp
  *
  * Then you can use these classes to do the job:
  * #include "MyCertificates.h"
@@ -30,6 +30,7 @@
  * http.begin(url, fingerprint, client_crt, client_crt_len, client_key, client_key_len);
  */
 #include <ESP8266HTTPClient.h>
+#include <ESP8266httpUpdate.h>
 #include <WiFiClientSecure.h>
 #include <memory>
 
@@ -79,6 +80,12 @@ public:
 
         return std::unique_ptr<WiFiClient>(espClient);
     };
+    bool verify(WiFiClient& client, const char* host) override
+    {
+        auto wcs = reinterpret_cast<WiFiClientSecure&>(client);
+        return wcs.verify(_fingerprint.c_str(), host);
+
+    }
 protected:
     const uint8_t* _cert;
     const uint16_t _certLen;
@@ -129,6 +136,7 @@ class ESPCertificateUpdate : ESP8266HTTPUpdate {
 
         HttpsCertificateClient http;
         http.begin(url, fingerprint, certificate, cert_len, private_key, key_len);
+        yield();
         return handleUpdate(http, currentVersion);
     };
 };
