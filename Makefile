@@ -1,8 +1,9 @@
 #SKETCH = 
 
-ESP_ROOT=$(HOME)/Arduino/esp8266gatewayhackversion
+ESP_ROOT ?= $(HOME)/Downloads/arduino-1.6.7/hardware/esp866
 
 LIBS += $(ESP_LIBS)/ESP8266WiFi \
+        $(ESP_LIBS)/espsoftwareserial \
 	$(ESP_LIBS)/ESP8266HTTPClient \
 	$(ESP_LIBS)/ESP8266httpUpdate \
 	KMEGLib \
@@ -58,4 +59,5 @@ httpserver_upload: version
 
 setup:
 	./setup.sh
+
 
