@@ -22,13 +22,13 @@
 // * Sends configuration to disable HW trigger for changing data/command mode (default: GPIO29,pin46)
 #define HACK_DISABLE_HW_MODE_TRIGGER 8
 
-// NOTE: Not implemented really
+// NOTE: Not implemented really, active tx is implemented in SensorNet.cpp
 #ifndef HACK_STRATEGY
 #define HACK_STRATEGY HACK_PASSIVE
 #endif
 
 // Whether to check updates on boot
-#define UPDATE_ON_BOOT 0
+#define UPDATE_ON_BOOT 1
 
 // Fetches updates from this
 #define UPDATE_URL FS("https://otaniemi3d.cs.hut.fi/k1updates")

@@ -1,11 +1,11 @@
 #SKETCH = 
 
-ESP_ROOT ?= $(HOME)/Downloads/arduino-1.6.7/hardware/esp866
+ESP_ROOT ?= $(HOME)/Arduino/esp8266gatewayhackversion/
 
 LIBS += $(ESP_LIBS)/ESP8266WiFi \
-        $(ESP_LIBS)/espsoftwareserial \
 	$(ESP_LIBS)/ESP8266HTTPClient \
 	$(ESP_LIBS)/ESP8266httpUpdate \
+        espsoftwareserial \
 	KMEGLib \
 	.
 

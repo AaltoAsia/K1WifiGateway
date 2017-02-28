@@ -211,6 +211,7 @@ void resetArray(uint8_t numV) {
     }
     numValues = 0;   
 }
+// TODO: This is done at SensorNet.cpp atm
 void loop() {
 #if HACK_STRATEGY & HACK_ACTIVE_TX
 #warning Connect TX line, that might short stuff if no diodes and pullup present
