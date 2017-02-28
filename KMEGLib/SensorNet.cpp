@@ -5,6 +5,7 @@
 #include <pgmspace.h>
 #include "SensorNet.h"
 #include "K1Building.h"
+#include <SoftwareSerial.h>
 
 #ifndef DBGSTREAM
 #define DBGSTREAM DummySerial
@@ -62,12 +63,16 @@ int32_t _24to_32(uint8_t *byte_3){
 
 static uint8_t post_char=0;  // last loop run input byte
 
+//Setup software serial RX D1(5) TX D2(4)
+SoftwareSerial swSer(5, 4, false, 10);
+
 int read_packet(uint8_t *packet)
 {
     uint8_t size=0;
     byte started_flag=0;  // packet start found 
     uint8_t data;         // input byte
     byte exit_counter=10; // exit after this goes to zero without a packet start
+    byte at_flag=0;
 
     while(exit_counter > 0)
     {
@@ -128,6 +133,18 @@ int read_packet(uint8_t *packet)
                     DBGSTREAM.print(" <S> ");
                     break;
             }
+        }
+        if(data == 'A' && at_flag == 0){
+          at_flag=1;
+        } else if(data == 'T' && at_flag == 1){
+          DBGSTREAM.println(F("\r\n[Ygg] Warning: sending OK"));
+          swSer.begin(115200); //should we check that swSer is open ?? while(!swSer){;}
+          swSer.print("[OK]");
+          swSer.flush();
+          swSer.end();
+          at_flag=0;
+        } else{
+          at_flag=0;
         }
 
         post_char=data;

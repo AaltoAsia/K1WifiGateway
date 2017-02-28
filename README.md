@@ -60,6 +60,7 @@ authentication, so unknown users cannot steal our client certificate from the up
 
 To update:
 
+1. `$ make clean` (otherwise the saved build time might be wrong)
 1. `$ make version`
 2. The image needs to be copied to the target HTTPS server from
    `/tmp/KMEG-WSN-OMI-bridge/KMEG-WSN-OMI-bridge.bin`

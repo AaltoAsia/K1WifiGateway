@@ -80,6 +80,9 @@ bool commsTested = false;
 
 void resetArray(uint8_t numV);
 
+// Setup software serial RX D1(5) TX D2(4) moved to Sensornet.cpp
+// SoftwareSerial swSer(5, 4, false, 10); 
+
 void setup() {
 
     DBGSTREAM.begin(115200); // Debugging output at 115200 baud rate
@@ -117,8 +120,13 @@ void setup() {
     //WiFi.begin("aalto open", NULL);
 
     http.setReuse(true);
+    
+    // Test internet connection
+
     DBGSTREAM.println(F("[SETUP] Checking for updates..."));
+#if UPDATE_ON_BOOT
     checkForUpdates();
+#endif
 
     DBGSTREAM.println(F("[SETUP] Testing O-MI node link by sending Gateway version data"));
     uint8_t wifiCounter;

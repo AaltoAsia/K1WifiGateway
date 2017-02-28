@@ -51,7 +51,7 @@ include ./makeEspArduino/makeEspArduino.mk
 # This version string is used for OTA update version check
 UPLOAD_VERSION=$(SRC_GIT_VERSION)_$(BUILD_TIME)
 version: all
-	echo "\n  WHOLE VERSION STRING: $(UPLOAD_VERSION)"
+	echo "   WHOLE VERSION STRING: $(UPLOAD_VERSION)"
 
 httpserver_upload: version
 	scp $(MAIN_EXE) $(SSH_UPLOAD_SERVER):.
@@ -60,4 +60,9 @@ httpserver_upload: version
 setup:
 	./setup.sh
 
+addr2line: $(MAIN_EXE)
+	echo "Paste stack trace here and press Ctrl+D"
+	egrep -o '40[0-2][0-9a-f]{5}\b' | \
+	    $(TOOLS_ROOT)/xtensa-lx106-elf/bin/xtensa-lx106-elf-addr2line \
+	    -aipC -e $(basename $(MAIN_EXE)).elf
 
