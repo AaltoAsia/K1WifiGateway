@@ -49,7 +49,8 @@ include ./makeEspArduino/makeEspArduino.mk
 
 
 # This version string is used for OTA update version check
-UPLOAD_VERSION=$(SRC_GIT_VERSION)_$(BUILD_TIME)
+UPLOAD_VERSION=$(SRC_GIT_VERSION)
+#_$(BUILD_TIME)
 version: all
 	echo "   WHOLE VERSION STRING: $(UPLOAD_VERSION)"
 
