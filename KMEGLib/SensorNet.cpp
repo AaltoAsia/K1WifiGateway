@@ -65,6 +65,7 @@ static uint8_t post_char=0;  // last loop run input byte
 
 //Setup software serial RX D1(5) TX D2(4)
 SoftwareSerial swSer(5, 4, false, 10);
+byte at_flag=0; //global flag for keeping track of the  AT messages
 
 int read_packet(uint8_t *packet)
 {
@@ -72,7 +73,6 @@ int read_packet(uint8_t *packet)
     byte started_flag=0;  // packet start found 
     uint8_t data;         // input byte
     byte exit_counter=10; // exit after this goes to zero without a packet start
-    byte at_flag=0;
 
     while(exit_counter > 0)
     {
