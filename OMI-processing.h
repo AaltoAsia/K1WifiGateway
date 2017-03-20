@@ -7,6 +7,7 @@ bool omiAddInfoItem(const char * itemName, const char * valueStr) ;
 bool omiCloseObject();
 bool omiFooter();
 bool createBridgeBootOMI() ;
+bool createBridgeStatusUpdateOMI(NodeStr * packetData, uint8_t len) ;
 bool createOMI(NodeStr * packetData, uint8_t len) ;
 
 #ifdef OMI_CERT

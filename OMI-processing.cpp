@@ -5,6 +5,7 @@
 #include "SensorNet.h"  // yggdrasil protocol handling
 #include "HttpsCertificateExtension.h"
 #include <ESP8266WiFi.h> // For mac address name wifi bridge object
+#include <time.h>
 
 
 
@@ -119,11 +120,53 @@ bool createBridgeBootOMI() {
     String(ESP.getFreeHeap()).toCharArray(valueStr, VALUE_LEN);
     omiAddInfoItem(FS("FreeRAM"), valueStr);
 
+    String(MAX_NODES).toCharArray(valueStr, VALUE_LEN);
+    omiAddInfoItem(FS("NumberOfNodesConnectedMax"), valueStr);
+
     //DBGSTREAM.printf(FS("version: %s\r\n Arduino/ESP version: %s\r\n Build time: %s %s\r\n"),
     //    _BuildInfo.src_version, _BuildInfo.env_version, _BuildInfo.date, _BuildInfo.time);
     //DBGSTREAM.printf(
     //    FS("[SETUP] Free heap RAM: %u  Program flash: Free (for updating): %u Used: %u \r\n")
     //    , ESP.getFreeHeap(), ESP.getFreeSketchSpace(), ESP.getSketchSize());
+    return omiFooter();
+}
+
+bool createBridgeStatusUpdateOMI(NodeStr * packetData, uint8_t len) {
+    char valueStr[VALUE_LEN];
+
+    yield();
+    omiHeader();
+
+    omiAddObject(FS("K1"));
+
+    omiAddObject(FS("Gateways"));
+
+    // bridges by mac address
+    WiFi.macAddress().toCharArray(valueStr, VALUE_LEN);
+    omiAddObject(valueStr);
+
+    String(ESP.getFreeSketchSpace()).toCharArray(valueStr, VALUE_LEN);
+    omiAddInfoItem(FS("FreeFlashMemory"), valueStr);
+
+    String(ESP.getFreeHeap()).toCharArray(valueStr, VALUE_LEN);
+    omiAddInfoItem(FS("FreeRAM"), valueStr);
+
+    String(WiFi.RSSI()).toCharArray(valueStr, VALUE_LEN);
+    omiAddInfoItem(FS("WiFiRSSI"), valueStr);
+
+    String(time((time_t)0)).toCharArray(valueStr, VALUE_LEN);
+    omiAddInfoItem(FS("Unixtime"), valueStr);
+
+    yield();
+    String(len).toCharArray(valueStr, VALUE_LEN);
+    omiAddInfoItem(FS("NumberOfNodesConnected"), valueStr);
+    omiAddObject(FS("Nodes"));
+    String(len).toCharArray(valueStr, VALUE_LEN);
+    for (int i = 0; i < len; i++){
+        String(packetData[i].Id).toCharArray(valueStr, VALUE_LEN);
+        omiAddInfoItem(valueStr, "1");
+    }
+
     return omiFooter();
 }
 

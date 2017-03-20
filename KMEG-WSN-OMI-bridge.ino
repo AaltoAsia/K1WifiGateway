@@ -11,6 +11,16 @@
 #include <ESP8266WiFiMulti.h>
 //#include <ESP8266HTTPClient.h>
 #include <ESP8266httpUpdate.h>
+#include <time.h>
+#ifdef __cplusplus
+extern "C"{
+#endif 
+#include <sntp.h>
+struct tm * ICACHE_FLASH_ATTR sntp_localtime(const time_t * tim_p);
+#ifdef __cplusplus
+} // extern "C"
+#endif
+
 
 // included in omi processing (no guard)
 //#include <buildinfo.h>      // version info
@@ -21,7 +31,6 @@
 #include "KMEGLib/SensorNet.h"          // yggdrasil protocol handling
 #include "OMI-processing.h"   // makes and sends all O-MI messages
 
-// Used for a hack in the ESP8266HttpClient that enables certificates when creating tcps context
 
 // Get a character from YGGDRASIL serial, (re)implemented for SensorNet.h library (that used linux serial before)
 char getch(void) {
@@ -43,6 +52,19 @@ void putch(unsigned char buf){
    YGGDRASIL.write(buf); 
 }
 
+void initTime() {
+    sntp_init();
+    sntp_setservername(0, (char*)"fi.pool.ntp.org");
+    sntp_setservername(1, (char*)"time.windows.com");
+    sntp_setservername(2, (char*)"time.nist.gov");
+    sntp_set_timezone(TIMEZONE);
+
+};
+
+struct tm* currentLocaltime() {
+    time_t unixtime = time((time_t*)0);
+    return sntp_localtime(&unixtime);
+};
 
 
 static ESP8266WiFiMulti WiFiMulti;
@@ -54,7 +76,11 @@ static HTTPClient http;
 #endif
 static ESPCertificateUpdate ESPUpdater;
 
+uint16_t lastUpdateDay = 0;
+
 void checkForUpdates() {
+    
+    lastUpdateDay = currentLocaltime()->tm_yday;
     yield();
     t_httpUpdate_return ret = ESPUpdater.update(
         UPDATE_URL,
@@ -176,13 +202,14 @@ void setup() {
 
 // GLOBALS
 //static NodeStr packetData; // data to send
-NodeStr accData[20]; // = (NodeStr*) malloc(20 * sizeof(NodeStr)); //this is array containing the accumulated Data over the interval defined; add lenght to DEFINE instead of magic value
+NodeStr accData[MAX_NODES]; // = (NodeStr*) malloc(20 * sizeof(NodeStr)); //this is array containing the accumulated Data over the interval defined
 static uint8_t sendRetries=0; // retry counter
 unsigned long previousMillis = 0; // last time data was sent
 uint8_t numValues = 0; //remember to keep this to array size
 
+
 void handleIncomingData() {
-    if (numValues < 20 && getNode(accData, numValues)) {
+    if (numValues < MAX_NODES && getNode(accData, numValues)) {
         DBGSTREAM.printf(FS("\r\nPacket success. \r\n\r\n"));
         sendRetries = MAX_RETRIES;
     } else {
@@ -211,6 +238,8 @@ void resetArray(uint8_t numV) {
     }
     numValues = 0;   
 }
+
+uint16_t intervalCounter = 0;
 // TODO: This is done at SensorNet.cpp atm
 void loop() {
 #if HACK_STRATEGY & HACK_ACTIVE_TX
@@ -226,22 +255,30 @@ void loop() {
 
     unsigned long currentMillis = millis();
     if(currentMillis - previousMillis >= interval){
-      previousMillis = currentMillis;
-      if(numValues > 0){
-      // Try to send the data in globals
-          if ( (sendRetries>0)
-            && (WiFiMulti.run() == WL_CONNECTED)) { // Connected to an AP
-  
-              if (createOMI(accData, numValues) && trySend(http)) {
-                  sendRetries = 0; 
-              } else {
-                  --sendRetries;
-              } 
-          }
-          //reset array
-          DBGSTREAM.printf(FS("Resetting data, array length was %u \r\n" ), numValues);
-          resetArray(numValues);
-      }  
+        previousMillis = currentMillis;
+        intervalCounter++;
+        if (intervalCounter > (60 * 60000 / interval)) {
+            if (createBridgeStatusUpdateOMI(accData, numValues)) trySend(http);
+#if UPDATE_ON_DAYCHANGE
+            struct tm *tm = currentLocaltime();
+            if (tm->tm_yday != lastUpdateDay) checkForUpdates();
+#endif
+        }
+        if(numValues > 0){
+        // Try to send the data in globals
+            if ( (sendRetries>0)
+                    && (WiFiMulti.run() == WL_CONNECTED)) { // Connected to an AP
+
+                if (createOMI(accData, numValues) && trySend(http)) {
+                    sendRetries = 0; 
+                } else {
+                    --sendRetries;
+                } 
+            }
+            //reset array
+            DBGSTREAM.printf(FS("Resetting data, array length was %u \r\n" ), numValues);
+            resetArray(numValues);
+        }  
     }
 
     //delay();
