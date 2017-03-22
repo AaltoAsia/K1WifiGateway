@@ -177,7 +177,7 @@ bool createOMI(NodeStr * packetData, uint8_t len) {
     yield();
     omiHeader();
 
-    omiAddObject("K1");
+    omiAddObject(FS("K1"));
 
 /*
     if (packetData.Type == FAIL_OSCILLOSCOPE || packetData.packetLost) {
@@ -260,7 +260,7 @@ bool createOMI(NodeStr * packetData, uint8_t len) {
     if(packetData[i].RssiCount > 0){
         DBGSTREAM.printf(FS("[OMI-processing] RSSI InfoItem.\r\n"));
         String(packetData[i].Rssi / packetData[i].RssiCount).toCharArray(valueStr, VALUE_LEN);
-       omiAddInfoItem("Rssi", valueStr);
+       omiAddInfoItem(FS("Rssi"), valueStr);
     }
 
     omiCloseObject();

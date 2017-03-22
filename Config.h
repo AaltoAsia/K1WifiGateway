@@ -84,7 +84,8 @@ const uint16_t interval = 60000; // interval at which to send data( cap is 10 se
 // How many characters is max size for InfoItem name + value
 #define MAX_II_NAME_VALUE_SIZE 40
 
-#define VALUE_LEN 15
+// Longest thing to store is MAC addr
+#define VALUE_LEN 18
 
 //#ifndef OMI_URL
 
