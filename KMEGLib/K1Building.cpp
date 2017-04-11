@@ -27,44 +27,44 @@ const char r4417[] PROGMEM = "408"; // Otaniemi3d: 408a
 const char r4418[] PROGMEM = "412a";
 
 // 3TH FLOOR
-const char r4301[] PROGMEM = "301d";
-const char r4302[] PROGMEM = "301c";
-const char r4303[] PROGMEM = "302b";
-const char r4304[] PROGMEM = "303a";
-const char r4305[] PROGMEM = "303b";
+const char r4301[] PROGMEM = "4301";//"331";//"301d";
+const char r4302[] PROGMEM = "4302";//"301c";
+const char r4303[] PROGMEM = "4303";//"307a_adhoc"; //"302b";
+const char r4304[] PROGMEM = "4304";//"303a";
+const char r4305[] PROGMEM = "4305";//"303b";
 const char r4306[] PROGMEM = "304a";
 const char r4307[] PROGMEM = "301_Corridor";
-const char r4308[] PROGMEM = "311_Kitchen";
-const char r4309[] PROGMEM = "309";
-const char r4310[] PROGMEM = "310";
-const char r4311[] PROGMEM = "311";
-const char r4312[] PROGMEM = "323";
-const char r4313[] PROGMEM = "324";
-const char r4314[] PROGMEM = "325b";
+const char r4308[] PROGMEM = "4308";//"304d_adhoc"; //"311_Kitchen";
+const char r4309[] PROGMEM = "4309";//"302c";//"309";
+const char r4310[] PROGMEM = "4310";//"309";//"310";
+const char r4311[] PROGMEM = "4311";//"318_adhoc"; //"311";
+const char r4312[] PROGMEM = "4312";//"323";
+const char r4313[] PROGMEM = "4313";//"324";
+const char r4314[] PROGMEM = "4314";//"325b";
 const char r4315[] PROGMEM = "326";
 const char r4316[] PROGMEM = "323_Corridor";
 const char r4317[] PROGMEM = "325a_Corridor";
 const char r4318[] PROGMEM = "326_Corridor";
 const char r4319[] PROGMEM = "312";
-const char r4320[] PROGMEM = "313";
-const char r4321[] PROGMEM = "314";
-const char r4322[] PROGMEM = "315";
-const char r4323[] PROGMEM = "316";
-const char r4324[] PROGMEM = "318";
+const char r4320[] PROGMEM = "4320";//"338"; //"313";
+const char r4321[] PROGMEM = "4321";//"316"; //"314";
+const char r4322[] PROGMEM = "4322";//"345e_adhoc";//E vai E ???  "315";
+const char r4323[] PROGMEM = "4323";//"345c_adhoc";//C vai E ???  "316";
+const char r4324[] PROGMEM = "4324";//"341c_adhoc"; //"318";
 const char r4325[] PROGMEM = "344_Corridor";
 const char r4326[] PROGMEM = "345_Corridor";
 const char r4327[] PROGMEM = "338_Corridor";
-const char r4328[] PROGMEM = "331";
-const char r4329[] PROGMEM = "332";
-const char r4330[] PROGMEM = "333";
-const char r4331[] PROGMEM = "335";
-const char r4332[] PROGMEM = "336";
+const char r4328[] PROGMEM = "4328";//"305d_adhoc"; //"331";
+const char r4329[] PROGMEM = "4329";//"343c_adhoc"; //"332";
+const char r4330[] PROGMEM = "4330";//"333";
+const char r4331[] PROGMEM = "4331";//"335";
+const char r4332[] PROGMEM = "4332";//"342_cafe_roof"; //"336";
 //const char r4333[] PROGMEM = "";
 //const char r4334[] PROGMEM = "";
-const char r4335[] PROGMEM = "337";
+const char r4335[] PROGMEM = "4335";//"342_lounge"; //"337";
 //const char r4336[] PROGMEM = "";
 const char r4337[] PROGMEM = "336";
-const char r4338[] PROGMEM = "341c";
+const char r4338[] PROGMEM = "4338";//"311";//"341c";
 
 // 2ND FLOOR
 const char r4201[] PROGMEM = "201";
@@ -151,6 +151,16 @@ const char r4640[] PROGMEM = "Lobby";
 const char r4641[] PROGMEM = "111_Corridor";
 const char r4642[] PROGMEM = "116_Corridor";
 const char r4643[] PROGMEM = "H165a_Corridor";
+//3rd floor sensors that were missing;
+const char r1047[] PROGMEM = "1047";
+const char r3003[] PROGMEM = "3003";
+const char r3004[] PROGMEM = "3004";
+const char r4014[] PROGMEM = "4014";
+const char r4015[] PROGMEM = "4015";
+const char r4647[] PROGMEM = "4647";
+const char r4648[] PROGMEM = "4648";
+const char r4650[] PROGMEM = "4650";
+const char r4651[] PROGMEM = "4651";
 const char r4652[] PROGMEM = "101";
 
 // PLUGS; How many?
@@ -435,6 +445,15 @@ const char* NodeNames[] = {
     r4518,
 
     // TODO: Others
+    r1047,
+    r3003,
+    r3004,
+    r4014,
+    r4015,
+    r4647,
+    r4648,
+    r4650,
+    r4651,
 };
 const uint16_t numberOfNodes = sizeof(NodeNames);
 //const char** Nodes44xx = NodeNames;
@@ -472,6 +491,16 @@ uint16_t getNodeIndex(uint16_t id) {
     RANGE(4207, 4207)
     RANGE(4234, 4234)
     RANGE(4518, 4518)
+    //sensors that were missing third floor
+    RANGE(1047, 1047)
+    RANGE(3003, 3003)
+    RANGE(3004, 3004)
+    RANGE(4014, 4014)
+    RANGE(4015, 4015)
+    RANGE(4647, 4647)
+    RANGE(4648, 4648)
+    RANGE(4650, 4650)
+    RANGE(4651, 4651)
     return 0xFFFF; // unknown
 }
 
