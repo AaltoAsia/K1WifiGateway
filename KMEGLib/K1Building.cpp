@@ -161,6 +161,61 @@ const char r4647[] PROGMEM = "4647";
 const char r4648[] PROGMEM = "4648";
 const char r4650[] PROGMEM = "4650";
 const char r4651[] PROGMEM = "4651";
+const char r4652[] PROGMEM = "101";
+
+// PLUGS; How many?
+// range 2000-2050? Found 2033, 2036
+const char plug1[] PROGMEM = "plug2001";
+const char plug2[] PROGMEM = "plug2002";
+const char plug3[] PROGMEM = "plug2003";
+const char plug4[] PROGMEM = "plug2004";
+const char plug5[] PROGMEM = "plug2005";
+const char plug6[] PROGMEM = "plug2006";
+const char plug7[] PROGMEM = "plug2007";
+const char plug8[] PROGMEM = "plug2008";
+const char plug9[] PROGMEM = "plug2009";
+const char plug10[] PROGMEM = "plug2010";
+const char plug11[] PROGMEM = "plug2011";
+const char plug12[] PROGMEM = "plug2012";
+const char plug13[] PROGMEM = "plug2013";
+const char plug14[] PROGMEM = "plug2014";
+const char plug15[] PROGMEM = "plug2015";
+const char plug16[] PROGMEM = "plug2016";
+const char plug17[] PROGMEM = "plug2017";
+const char plug18[] PROGMEM = "plug2018";
+const char plug19[] PROGMEM = "plug2019";
+const char plug20[] PROGMEM = "plug2020";
+const char plug21[] PROGMEM = "plug2021";
+const char plug22[] PROGMEM = "plug2022";
+const char plug23[] PROGMEM = "plug2023";
+const char plug24[] PROGMEM = "plug2024";
+const char plug25[] PROGMEM = "plug2025";
+const char plug26[] PROGMEM = "plug2026";
+const char plug27[] PROGMEM = "plug2027";
+const char plug28[] PROGMEM = "plug2028";
+const char plug29[] PROGMEM = "plug2029";
+const char plug30[] PROGMEM = "plug2030";
+const char plug31[] PROGMEM = "plug2031";
+const char plug32[] PROGMEM = "plug2032";
+const char plug33[] PROGMEM = "plug2033";
+const char plug34[] PROGMEM = "plug2034";
+const char plug35[] PROGMEM = "plug2035";
+const char plug36[] PROGMEM = "plug2036";
+const char plug37[] PROGMEM = "plug2037";
+const char plug38[] PROGMEM = "plug2038";
+const char plug39[] PROGMEM = "plug2039";
+const char plug40[] PROGMEM = "plug2040";
+const char plug41[] PROGMEM = "plug2041";
+const char plug42[] PROGMEM = "plug2042";
+const char plug43[] PROGMEM = "plug2043";
+const char plug44[] PROGMEM = "plug2044";
+const char plug45[] PROGMEM = "plug2045";
+const char plug46[] PROGMEM = "plug2046";
+const char plug47[] PROGMEM = "plug2047";
+const char plug48[] PROGMEM = "plug2048";
+const char plug49[] PROGMEM = "plug2049";
+const char plug50[] PROGMEM = "plug2050";
+
 
 // TESTING
 const char r4207[] PROGMEM = "TestBlue";
@@ -176,6 +231,58 @@ const char co2[] = "co2";
 
 const char* NodeNames[] = {
     unknown,
+    // PLUGS
+    plug1,
+    plug2,
+    plug3,
+    plug4,
+    plug5,
+    plug6,
+    plug7,
+    plug8,
+    plug9,
+    plug10,
+    plug11,
+    plug12,
+    plug13,
+    plug14,
+    plug15,
+    plug16,
+    plug17,
+    plug18,
+    plug19,
+    plug20,
+    plug21,
+    plug22,
+    plug23,
+    plug24,
+    plug25,
+    plug26,
+    plug27,
+    plug28,
+    plug29,
+    plug30,
+    plug31,
+    plug32,
+    plug33,
+    plug34,
+    plug35,
+    plug36,
+    plug37,
+    plug38,
+    plug39,
+    plug40,
+    plug41,
+    plug42,
+    plug43,
+    plug44,
+    plug45,
+    plug46,
+    plug47,
+    plug48,
+    plug49,
+    plug50,
+
     // 4TH FLOOR
     // 44xx
     r4401,
@@ -330,6 +437,8 @@ const char* NodeNames[] = {
     r4642,
     r4643,
 
+    r4652,
+
     // TEMPORARY TEST
     r4207,
     r4234,
@@ -360,6 +469,10 @@ const uint16_t numberOfNodes = sizeof(NodeNames);
 uint16_t getNodeIndex(uint16_t id) {
     int16_t range_start = 1;
 
+    // RANGE(inclusive_start, inclusive_end)
+
+    RANGE(2001, 2050)
+
     // 4TH FLOOR
     RANGE(4401, 4418)
     RANGE(4531, 4533)
@@ -372,6 +485,7 @@ uint16_t getNodeIndex(uint16_t id) {
 
     // 1ST FLOOR
     RANGE(4601, 4643)
+    RANGE(4652, 4652)
 
     // For testing
     RANGE(4207, 4207)
@@ -395,7 +509,7 @@ uint16_t getNodeIndex(uint16_t id) {
 
 //#define GET_FLASH_ARR(arr, ind) strcpy_P(_msgBuf, (char*)pgm_read_word(&(arr[ind])));
 char* getNodeName(uint16_t id) {
-    int16_t ret = getNodeIndex(id);
+    auto ret = getNodeIndex(id);
     if (ret < numberOfNodes) return _getMsgBuf(FPSTR(NodeNames[ret]));
     else return _getMsgBuf(FPSTR(unknown));
 }

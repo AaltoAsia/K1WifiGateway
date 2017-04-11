@@ -1,11 +1,11 @@
 #SKETCH = 
 
-ESP_ROOT ?= $(HOME)/Downloads/arduino-1.6.7/hardware/esp866
+ESP_ROOT ?= $(HOME)/Arduino/esp8266gatewayhackversion/
 
 LIBS += $(ESP_LIBS)/ESP8266WiFi \
-        $(ESP_LIBS)/espsoftwareserial \
 	$(ESP_LIBS)/ESP8266HTTPClient \
 	$(ESP_LIBS)/ESP8266httpUpdate \
+        espsoftwareserial \
 	KMEGLib \
 	.
 
@@ -49,7 +49,8 @@ include ./makeEspArduino/makeEspArduino.mk
 
 
 # This version string is used for OTA update version check
-UPLOAD_VERSION=$(SRC_GIT_VERSION)_$(BUILD_TIME)
+UPLOAD_VERSION=$(SRC_GIT_VERSION)
+#_$(BUILD_TIME)
 version: all
 	echo "   WHOLE VERSION STRING: $(UPLOAD_VERSION)"
 

@@ -22,16 +22,25 @@
 // * Sends configuration to disable HW trigger for changing data/command mode (default: GPIO29,pin46)
 #define HACK_DISABLE_HW_MODE_TRIGGER 8
 
-// NOTE: Not implemented really
+// NOTE: Not implemented really, active tx is implemented in SensorNet.cpp
 #ifndef HACK_STRATEGY
 #define HACK_STRATEGY HACK_PASSIVE
 #endif
 
+/////////// UPDATES
+
 // Whether to check updates on boot
-#define UPDATE_ON_BOOT 0
+#define UPDATE_ON_BOOT 1
+// Whether update automatically when the current day changes
+#define UPDATE_ON_DAYCHANGE 1
+// Timezone in hours, used for update checking
+#define TIMEZONE +2
 
 // Fetches updates from this
 #define UPDATE_URL FS("https://otaniemi3d.cs.hut.fi/k1updates")
+
+////////////
+
 // O-MI Node for write requests
 #define OMI_URL FS("https://otaniemi3d.cs.hut.fi/omi/node/")
 
@@ -45,6 +54,7 @@
 // Loads the client certificate from SPIFFS files: /client.crt and /client.key
 // WARNING: Requires modified ESP8266HttpClient currently (2016-04-08)
 #define USE_CLIENTCERTIFICATE 1
+
 
 
 // Serial for debugging, connect esp TX to usb serial RX
@@ -61,6 +71,9 @@ const uint16_t interval = 60000; // interval at which to send data( cap is 10 se
 
 //////////////////////////////////////////////////////////////
 // Omi-processing
+
+// How many sensorboxes to save for the interval time period
+#define MAX_NODES 20
 
 // How many object can be stored in http buffer for one request
 #define MAX_OBJECTS 16
