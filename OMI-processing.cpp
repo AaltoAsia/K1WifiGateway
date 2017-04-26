@@ -197,7 +197,11 @@ bool createOMI(NodeStr * packetData, uint8_t len) {
     for(uint8_t i = 0; i < len; i++)
     {
     DBGSTREAM.printf(FS("[OMI-processing] Creating Object. getNodeName(%i).\r\n"), packetData[i].Id);
-    omiAddObject(getNodeName(packetData[i].Id));
+    char objName[6];//reserve string of length 6 (max value 65535 + \n) for the ID
+    uint16_t sensorId = packetData[i].Id;
+    snprintf(objName,6,"%d", sensorId);
+    omiAddObject(objName);
+    //omiAddObject(getNodeName(packetData[i].Id));
 
     if(packetData[i].threeCount > 0){ //check if we have any values
         DBGSTREAM.printf(FS("[OMI-processing] temp,humi,light InfoItem.\r\n"));
@@ -223,7 +227,7 @@ bool createOMI(NodeStr * packetData, uint8_t len) {
                     DBGSTREAM.printf(FS("[OMI-processing] humi.\r\n"));
                     threeValue = 12500; //constant from the datasheets
                     threeValue *= packetData[i].intValues[idx];
-                    threeValue >>= 12; //divide by 2^14
+                    threeValue >>= 12; //divide by 2^12
                     threeValue -= (600 * packetData[i].threeCount);
                 break;
                 }
