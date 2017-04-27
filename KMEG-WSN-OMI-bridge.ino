@@ -80,7 +80,6 @@ uint16_t lastUpdateDay = 0;
 
 void checkForUpdates() {
     
-    lastUpdateDay = currentLocaltime()->tm_yday;
     yield();
     t_httpUpdate_return ret = ESPUpdater.update(
         UPDATE_URL,
@@ -95,9 +94,11 @@ void checkForUpdates() {
             break;
         case HTTP_UPDATE_NO_UPDATES:
             DBGSTREAM.println("[update] Update no Update.");
+            lastUpdateDay = currentLocaltime()->tm_yday;
             break;
         case HTTP_UPDATE_OK:
             DBGSTREAM.println("[update] Update ok."); // may not called we reboot the ESP
+            lastUpdateDay = currentLocaltime()->tm_yday;
             break;
     }
 }
@@ -258,6 +259,7 @@ void loop() {
         previousMillis = currentMillis;
         intervalCounter++;
         if (intervalCounter > (60 * 60000 / interval)) {
+            intervalCounter = 0;
             if (createBridgeStatusUpdateOMI(accData, numValues)) trySend(http);
 #if UPDATE_ON_DAYCHANGE
             struct tm *tm = currentLocaltime();
