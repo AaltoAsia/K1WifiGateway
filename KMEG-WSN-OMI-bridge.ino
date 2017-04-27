@@ -150,15 +150,17 @@ void setup() {
     
     // Test internet connection
 
-    DBGSTREAM.println(F("[SETUP] Checking for updates..."));
-#if UPDATE_ON_BOOT
-    checkForUpdates();
-#endif
 
     DBGSTREAM.println(F("[SETUP] Testing O-MI node link by sending Gateway version data"));
     uint8_t wifiCounter;
     for (wifiCounter = 0; wifiCounter < 60; wifiCounter++) {
         if (WiFiMulti.run() == WL_CONNECTED) {
+            DBGSTREAM.println(F("[SETUP] Checking for updates..."));
+
+#           if UPDATE_ON_BOOT
+                checkForUpdates();
+#           endif
+
             if (!createBridgeBootOMI()){
                 DBGSTREAM.println(F("[SETUP] FATAL: O-MI node link payload creation failed!"));
                 delay(1000);
